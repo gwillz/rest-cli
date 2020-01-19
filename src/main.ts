@@ -1,6 +1,7 @@
 
 import path from 'path';
 import { RestParser } from './RestParser';
+import { isAxiosError } from './utils';
 
 if (require.main === module) {
     require('source-map-support').install();
@@ -41,7 +42,9 @@ async function main() {
     }
     catch (error) {
         console.log(error.message);
-        console.log(error.response.data);
+        if (isAxiosError(error) && error.response) {
+            console.log(error.response.data);
+        }
     }
 }
 

@@ -1,4 +1,6 @@
 
+import { AxiosError } from 'axios';
+
 export type StringMap = Record<string, string>;
 
 export function tuple<T extends any[]> (...data: T) {
@@ -28,6 +30,11 @@ export function isBuffer(test: unknown): test is Buffer {
         !!test &&
         test.constructor.name === "Buffer"
     );
+}
+
+
+export function isAxiosError(test: any): test is AxiosError {
+    return !!test && test.isAxiosError;
 }
 
 
