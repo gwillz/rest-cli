@@ -102,3 +102,14 @@ export async function retry(attempts: number, cb: (attempt: number) => void | Pr
         attempt++;
     }
 }
+
+
+export function capitalise(input: string, delimiter = " ") {
+    return input
+        .split(delimiter)
+        .map(word => (
+            word.slice(0, 1).toUpperCase() +
+            word.slice(1).toLowerCase()
+        ))
+        .join(delimiter);
+}

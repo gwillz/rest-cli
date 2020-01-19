@@ -127,3 +127,12 @@ test("utils: retry (bad)", async assert => {
     assert.equals(count, 5);
     assert.end();
 });
+
+test("utils: capitalise", assert => {
+    
+    const actual = utils.capitalise("this-is-LOWER.", "-");
+    const expected = "This-Is-Lower.";
+    
+    assert.equals(actual, expected);
+    assert.end();
+});
