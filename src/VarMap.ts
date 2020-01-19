@@ -69,14 +69,14 @@ export class VarMap {
             
             // entity lookup.
             if (type && property && path && this.entities[root]) {
-                let entity = this.entities[root];
+                let entity = this.entities[root][type];
                 
                 // headers
                 if (property === "headers") {
-                    return entity[type][property][path];
+                    return entity.headers.get(path) ?? "";
                 }
                 
-                let body = bodyAsString(entity[type][property]);
+                let body = bodyAsString(entity.body);
                 
                 // empty
                 if (!body) return "";

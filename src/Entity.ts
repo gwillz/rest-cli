@@ -2,15 +2,16 @@
 import { StringMap, bodyAsString } from "./utils";
 import { RestRequest } from "./RestRequest";
 import { AxiosResponse } from "axios";
+import { HeaderMap } from "./HeaderMap";
 
 interface EntityRequest {
     body: string | Buffer | null;
-    headers: StringMap;
+    headers: HeaderMap;
 }
 
 interface EntityResponse {
     body: any;
-    headers: StringMap;
+    headers: HeaderMap;
     statusText: string;
     status: number;
 }
@@ -29,7 +30,7 @@ export class Entity {
         };
         this.response = {
             body: res.data,
-            headers: res.headers,
+            headers: HeaderMap.from(res.headers),
             statusText: res.statusText,
             status: res.status,
         };

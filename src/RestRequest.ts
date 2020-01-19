@@ -5,13 +5,14 @@ import axios from 'axios';
 import { Method } from "./Token";
 import { VarMap } from './VarMap';
 import { Entity } from './Entity';
+import { HeaderMap } from './HeaderMap';
 
 type StringMap = Record<string, string>;
 
 interface Props {
     method: Method;
     url: string;
-    headers: StringMap;
+    headers: StringMap | HeaderMap;
     path?: string;
     data?: Buffer | string;
     name?: string;
@@ -20,7 +21,7 @@ interface Props {
 export class RestRequest {
     method: Method;
     url: string;
-    headers: StringMap;
+    headers: HeaderMap;
     body: string | Buffer | null;
     
     sourcePath: string;
@@ -31,7 +32,7 @@ export class RestRequest {
         this.sourcePath = sourcePath;
         this.method = props.method;
         this.url = props.url;
-        this.headers = props.headers;
+        this.headers = HeaderMap.from(props.headers);
         
         this.body = props.data ?? null;
         this.filePath = props.path;
@@ -59,7 +60,7 @@ export class RestRequest {
         return new RestRequest(this.sourcePath, {
             method: this.method,
             url: vars.replace(this.url),
-            headers: vars.replaceMap(this.headers),
+            headers: this.headers.fill(vars),
             data: body ?? undefined,
             path: this.filePath,
             name: this.name,
