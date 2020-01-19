@@ -9,7 +9,7 @@ test("utils: bodyAsString", assert => {
         assert.equals(actual, expected);
     }
     {
-        const buffer = new Buffer("a whole bunch of stuff");
+        const buffer = Buffer.from("a whole bunch of stuff");
         const actual = utils.bodyAsString(buffer);
         const expected = "a whole bunch of stuff";
         assert.equals(actual, expected);
@@ -23,7 +23,7 @@ test("utils: isBuffer", assert => {
     assert.false(utils.isBuffer({}));
     assert.false(utils.isBuffer({constructor: "neat"}));
     
-    assert.true(utils.isBuffer(new Buffer("")));
+    assert.true(utils.isBuffer(Buffer.from("")));
     
     assert.end();
 });

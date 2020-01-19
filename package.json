@@ -5,9 +5,10 @@
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
   "scripts": {
-    "dev": "node -r ts-node/register --harmony_async_iteration src/main.ts",
-    "test": "npx -n'-r ts-node/register' -n--harmony_async_iteration tape tests/*.test.ts | tap-spec",
-    "serve": "node -r ts-node/register tests/app.ts",
+    "bin": "node dist/src/main.js",
+    "dev": "ts-node src/main.ts",
+    "test": "tape -r ts-node/register tests/*.test.ts | tap-spec",
+    "serve": "ts-node tests/app.ts",
     "prepare": "tsc -b && echo kk"
   },
   "files": [
@@ -15,6 +16,9 @@
     "README.md",
     "LICENSE.md"
   ],
+  "bin": {
+    "unwind-js": "dist/src/main.js"
+  },
   "repository": {
     "type": "git",
     "url": "github.com/gwillz/rest-cli"
