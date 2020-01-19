@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    /* Basic Options */
+    "incremental": true,
+    "target": "es5",
+    "module": "commonjs",
+    // "lib": [""],
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    // "rootDir": "./",
+    "downlevelIteration": true,
+    
+    /* Strict Type-Checking Options */
+    "strict": true,
+    
+    /* Additional Checks */
+    "noImplicitReturns": true,
+
+    /* Module Resolution Options */
+    "moduleResolution": "node",
+    // "types": ["node"],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "allowUmdGlobalAccess": false,
+
+    /* Experimental Options */
+    // "experimentalDecorators": true,
+    // "emitDecoratorMetadata": true,
+
+    /* Advanced Options */
+    "forceConsistentCasingInFileNames": true
+  }
+}
