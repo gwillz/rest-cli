@@ -1,6 +1,7 @@
 
 import test from 'tape';
 import * as utils from '../src/utils';
+import { DateTime } from 'luxon';
 
 test("utils: bodyAsString", assert => {
     {
@@ -136,3 +137,97 @@ test("utils: capitalise", assert => {
     assert.equals(actual, expected);
     assert.end();
 });
+
+test("utils: getDuration", assert => {
+    {
+        const actual = utils.getDuration(100, "ms");
+        const expected = { "milliseconds": 100 };
+        assert.deepEquals(actual, expected);
+    }
+    {
+        const actual = utils.getDuration(-10, "s");
+        const expected = { "seconds": -10 };
+        assert.deepEquals(actual, expected);
+    }
+    {
+        const actual = utils.getDuration(1, "m");
+        const expected = { "minutes": 1 };
+        assert.deepEquals(actual, expected);
+    }
+    {
+        const actual = utils.getDuration(-1, "h");
+        const expected = { "hours": -1 };
+        assert.deepEquals(actual, expected);
+    }
+    {
+        const actual = utils.getDuration(7, "d");
+        const expected = { "days": 7 };
+        assert.deepEquals(actual, expected);
+    }
+    {
+        const actual = utils.getDuration(4, "w");
+        const expected = { "weeks": 4 };
+        assert.deepEquals(actual, expected);
+    }
+    {
+        const actual = utils.getDuration(12, "M");
+        const expected = { "months": 12 };
+        assert.deepEquals(actual, expected);
+    }
+    {
+        const actual = utils.getDuration(4, "Q");
+        const expected = { "quarters": 4 };
+        assert.deepEquals(actual, expected);
+    }
+    {
+        const actual = utils.getDuration(0, "y");
+        const expected = { "years": 0 };
+        assert.deepEquals(actual, expected);
+    }
+    
+    assert.end();
+});
+
+test("utils: getOffset", assert => {
+    const date = DateTime.local();
+    
+    {
+        const actual = utils.getOffset(date);
+        assert.equals(+actual, +date);
+    }
+    {
+        const actual = utils.getOffset(date, "10", "w");
+        const expected = date.plus({ weeks: 10 });
+        assert.equals(+actual, +expected);
+    }
+    {
+        const actual = utils.getOffset(date, "-2", "y");
+        const expected = date.plus({ years: -2 });
+        assert.equals(+actual, +expected);
+    }
+    
+    assert.end();
+});
+
+test("utils: formatDate", assert => {
+    const date = DateTime.utc(2000, 3, 4, 5, 6, 7, 8);
+    
+    {
+        const actual = utils.formatDate(date, "rfc1123");
+        const expected = "Sat, 04 Mar 2000 05:06:07 GMT";
+        assert.equals(actual, expected);
+    }
+    {
+        const actual = utils.formatDate(date, "iso8601");
+        const expected = "2000-03-04T05:06:07.008Z";
+        assert.equals(actual, expected);
+    }
+    {
+        const actual = utils.formatDate(date, "yyyy-MM-d");
+        const expected = "2000-03-4";
+        assert.equals(actual, expected);
+    }
+    
+    assert.end();
+});
+

@@ -1,5 +1,6 @@
 
 import { AxiosError } from 'axios';
+import { DurationObject, DateTime } from 'luxon';
 
 export type StringMap = Record<string, string>;
 
@@ -112,4 +113,51 @@ export function capitalise(input: string, delimiter = " ") {
             word.slice(1).toLowerCase()
         ))
         .join(delimiter);
+}
+
+export function getDuration(offset: number, option: string): DurationObject | undefined {
+    switch (option) {
+        case 'ms':
+            return { milliseconds: offset };
+        case 's':
+            return { seconds: offset };
+        case 'm':
+            return { minutes: offset };
+        case 'h':
+            return { hours: offset };
+        case 'd':
+            return { days: offset };
+        case 'w':
+            return { weeks: offset };
+        case 'M':
+            return { months: offset };
+        case 'Q':
+            return { quarters: offset };
+        case 'y':
+            return { years: offset };
+    }
+    return undefined;
+}
+
+export function getOffset(date: DateTime, offset?: string, option?: string) {
+    if (offset && option) {
+        const duration = getDuration(+offset, option);
+        
+        if (duration) {
+            date = date.plus(duration);
+        }
+    }
+    
+    return date;
+}
+
+export function formatDate(date: DateTime, format: string) {
+    switch (format) {
+        case "rfc1123":
+            return date.toHTTP();
+        case "iso8601":
+            return date.toISO();
+        default:
+            return date.toFormat(format);
+    }
 }
