@@ -1,7 +1,7 @@
 
 import path from 'path';
 import { RestParser } from './RestParser';
-import { isAxiosError, getArgs } from './utils';
+import { isAxiosError, getArgs, retry } from './utils';
 
 if (require.main === module) {
     require('source-map-support').install();
@@ -53,22 +53,5 @@ async function main() {
         if (isAxiosError(error) && error.response) {
             console.log(error.response.data);
         }
-    }
-}
-
-
-async function retry(attempts: number, cb: (attempt: number) => Promise<void>) {
-    let attempt = 1;
-    for (;;) {
-        try {
-            await cb(attempt);
-            break;
-        }
-        catch (error) {
-            if (attempt == attempts) {
-                throw error;
-            }
-        }
-        attempt++;
     }
 }

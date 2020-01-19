@@ -74,3 +74,56 @@ test("utils: getArgs", assert => {
     
     assert.end();
 });
+
+test("utils: retry (immediate)", async assert => {
+    assert.plan(1);
+    let count = 0;
+    
+    try {
+        await utils.retry(5, attempt => {
+            count = attempt;
+        });
+    }
+    catch (error) {
+        assert.fail(error);
+    }
+    
+    assert.equals(count, 1);
+    assert.end();
+});
+
+test("utils: retry (good)", async assert => {
+    assert.plan(1);
+    let count = 0;
+    
+    try {
+        await utils.retry(5, attempt => {
+            count = attempt;
+            if (attempt < 3) throw new Error("mm");
+        });
+    }
+    catch (error) {
+        assert.fail(error);
+    }
+    
+    assert.equals(count, 3);
+    assert.end();
+});
+
+test("utils: retry (bad)", async assert => {
+    assert.plan(1);
+    let count = 0;
+    
+    try {
+        await utils.retry(5, attempt => {
+            count = attempt;
+            throw new Error("mm");
+        });
+        
+        assert.fail();
+    }
+    catch (error) {}
+    
+    assert.equals(count, 5);
+    assert.end();
+});

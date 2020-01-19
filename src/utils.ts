@@ -85,3 +85,20 @@ export function getArgs(flags: string[] = [], argv = process.argv): Args {
     
     return { node, script, options, args };
 }
+
+
+export async function retry(attempts: number, cb: (attempt: number) => void | Promise<void>) {
+    let attempt = 1;
+    for (;;) {
+        try {
+            await cb(attempt);
+            break;
+        }
+        catch (error) {
+            if (attempt == attempts) {
+                throw error;
+            }
+        }
+        attempt++;
+    }
+}
