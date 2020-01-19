@@ -5,11 +5,10 @@ import path from 'path';
 import { RestParser } from '../src';
 
 const r = path.resolve.bind(null, __dirname);
-
 const TEST_FILE = r("test.http");
 
+
 test("RestParser: read", assert => {
-    
     const parser = new RestParser();
     assert.equals(parser.isEmpty(), true);
     
@@ -18,3 +17,8 @@ test("RestParser: read", assert => {
     
     assert.end();
 });
+
+// @todo Test out-of-order parsing
+
+// @todo Test async iterator (using variable fills)
+ 

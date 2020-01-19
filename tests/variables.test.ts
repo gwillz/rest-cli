@@ -3,6 +3,10 @@ import test from 'tape';
 import { VarMap } from '../src';
 import { Entity } from '../src/entity';
 
+// @todo Test functions (aka. dynamic variables)
+
+// @todo Test shared variables
+
 function createEntity(): Entity {
     return {
         request: {

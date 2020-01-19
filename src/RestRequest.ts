@@ -14,7 +14,6 @@ interface Props {
     headers: StringMap;
     path?: string;
     data?: Buffer | string;
-    // blob?: Buffer;
     name?: string;
 }
 
@@ -89,10 +88,5 @@ export class RestRequest {
     
     public toString() {
         return `${this.method.padEnd(6)} ${this.url}`;
-        // for (let [name, value] of Object.entries(this.headers)) {
-        //     out += `${name}: ${value}\n`;
-        // }
-        // out += this.filePath ?? this.body;
-        // out += "\n";
     }
 }
