@@ -1,0 +1,21 @@
+
+@host = http://localhost:3000
+@api = {{host}}/api
+@password = 1234567890
+###
+
+# @name andrew
+POST {{api}}/users/new
+Content-Type: application/json
+{
+    "name": "Andrew",
+    "email": "andrew@test.me",
+    "password": "{{password}}"
+}
+###
+@user_id = {{andrew.response.body.$.user_id}}
+
+# @name yep
+GET {{api}}/users/{{user_id}}
+Authorization: Basic andrew {{password}}
+Content-Type: application/json
