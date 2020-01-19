@@ -1,7 +1,7 @@
 
 import path from 'path';
 import { RestParser } from './RestParser';
-import { isAxiosError } from './utils';
+import { isAxiosError, getArgs } from './utils';
 
 if (require.main === module) {
     require('source-map-support').install();
@@ -10,9 +10,12 @@ if (require.main === module) {
 }
 
 async function main() {
+    const args = getArgs(["short"]);
     const parser = new RestParser();
     
-    for (let filepath of process.argv.slice(2)) {
+    console.log(args);
+    
+    for (let filepath of args.args) {
         if (!filepath) continue;
         filepath = path.resolve(filepath);
         
@@ -33,6 +36,11 @@ async function main() {
                 console.log(`${i}: [${attempt}] ${req.toString()}`);
                 
                 let entity = await req.request();
+                
+                if (!args.options.short) {
+                    console.log("");
+                    console.log(entity.toString());
+                }
                 
                 if (req.name) {
                     parser.vars.addEntity(req.name, entity);

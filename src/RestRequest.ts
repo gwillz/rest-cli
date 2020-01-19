@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import axios from 'axios';
 import { Method } from "./Token";
 import { VarMap } from './VarMap';
-import { Entity } from './entity';
+import { Entity } from './Entity';
 
 type StringMap = Record<string, string>;
 
@@ -74,16 +74,7 @@ export class RestRequest {
             transformResponse: res => res,
         });
         
-        return {
-            request: {
-                headers: this.headers,
-                body: this.body,
-            },
-            response: {
-                headers: res.headers,
-                body: res.data,
-            }
-        }
+        return new Entity(this, res);
     }
     
     public toString() {

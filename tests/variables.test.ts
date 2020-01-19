@@ -1,13 +1,13 @@
 
 import test from 'tape';
 import { VarMap } from '../src';
-import { Entity } from '../src/entity';
+import { Entity } from '../src/Entity';
 
 // @todo Test functions (aka. dynamic variables)
 
 // @todo Test shared variables
 
-function createEntity(): Entity {
+function mockEntity(): Entity {
     return {
         request: {
             headers: {
@@ -20,6 +20,8 @@ function createEntity(): Entity {
                 'content-type': 'text/xml',
             },
             body: '<one><two three="four"/></one>',
+            statusText: "OK",
+            status: 200,
         }
     }
 }
@@ -39,7 +41,7 @@ test("VarMap: variable", assert => {
 
 test("VarMap: request header", assert => {
     const vars = new VarMap({ entities: {
-        test: createEntity(),
+        test: mockEntity(),
     }});
     
     const actual = vars.replace("{{test.request.headers.content-type}}");
@@ -51,7 +53,7 @@ test("VarMap: request header", assert => {
 
 test("VarMap: request json body", assert => {
     const vars = new VarMap({ entities: {
-        test: createEntity(),
+        test: mockEntity(),
     }});
     
     const actual = vars.replace("{{test.request.body.$..two}}");
@@ -63,7 +65,7 @@ test("VarMap: request json body", assert => {
 
 test("VarMap: response header", assert => {
     const vars = new VarMap({ entities: {
-        test: createEntity(),
+        test: mockEntity(),
     }});
     
     const actual = vars.replace("{{test.response.headers.content-type}}");
@@ -75,7 +77,7 @@ test("VarMap: response header", assert => {
 
 test("VarMap: response xml body", assert => {
     const vars = new VarMap({ entities: {
-        test: createEntity(),
+        test: mockEntity(),
     }});
     
     const actual = vars.replace("{{test.response.body.//@three}}");

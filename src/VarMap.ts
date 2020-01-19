@@ -3,7 +3,7 @@ import xpath from 'xpath';
 import { DOMParser } from 'xmldom';
 import { JSONPath } from 'jsonpath-plus';
 import { bodyAsString, safeParseJson, StringMap } from './utils';
-import { EntityMap, Entity } from './entity';
+import { EntityMap, Entity } from './Entity';
 
 type Props = {
     variables?: StringMap,
