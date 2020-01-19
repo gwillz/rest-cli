@@ -47,3 +47,41 @@ export function safeParseJson(body: string): any {
         return null;
     }
 }
+
+type Args = {
+    node: string;
+    script: string;
+    options: StringMap;
+    args: string[];
+}
+
+export function getArgs(flags: string[] = [], argv = process.argv): Args {
+    const [node, script, ...rest] = argv;
+    
+    const options: StringMap = {};
+    const args: string[] = [];
+    
+    let name: undefined | string;
+    
+    for (let arg of rest) {
+        const m = /^-+(.+)$/.exec(arg);
+        
+        if (m) {
+            name = m[1];
+            options[name] = "true";
+            
+            if (flags.includes(name)) {
+                name = undefined;
+            }
+        }
+        else if (name) {
+            options[name] = arg;
+            name = undefined;
+        }
+        else {
+            args.push(arg);
+        }
+    }
+    
+    return { node, script, options, args };
+}

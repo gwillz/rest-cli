@@ -41,3 +41,36 @@ test("utils: safeParseJson", assert => {
     }
     assert.end();
 });
+
+test("utils: getArgs", assert => {
+    
+    const args = utils.getArgs(['six'], [
+        "/usr/bin/node",
+        "/home/utils.js",
+        "--one",
+        "--two",
+        "three",
+        "four",
+        "five",
+        "--six",
+        "seven",
+        "eight",
+        "--nine",
+    ]);
+    
+    assert.equals(args.node, "/usr/bin/node");
+    assert.equals(args.script, "/home/utils.js");
+    
+    assert.deepEquals(args.options, {
+       "one": "true",
+       "two": "three",
+       "six": "true",
+       "nine": "true",
+    });
+    
+    assert.deepEquals(args.args, [
+        "four", "five", "seven", "eight"
+    ]);
+    
+    assert.end();
+});
