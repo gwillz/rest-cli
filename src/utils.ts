@@ -1,6 +1,6 @@
 
 import { DurationObject, DateTime } from 'luxon';
-import { Response, Blob } from 'node-fetch';
+import { Response, Headers } from 'node-fetch';
 
 export type StringMap = Record<string, string>;
 
@@ -42,6 +42,17 @@ export function bodyAsString(body: unknown): string {
     else {
         return body;
     }
+}
+
+
+export function headersAsString(headers: Headers): string {
+    let out = "";
+    
+    for (let [name, value] of headers) {
+        out += `${capitalise(name, '-')}: ${value}\n`;
+    }
+    
+    return out;
 }
 
 

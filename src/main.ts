@@ -1,7 +1,7 @@
 
 import path from 'path';
 import { RestParser } from './RestParser';
-import { getArgs, retry, bodyAsString, isServerError } from './utils';
+import { getArgs, retry, bodyAsString, isServerError, headersAsString } from './utils';
 import { EntityResponse } from './Entity';
 import { RestRequest } from './RestRequest';
 
@@ -99,7 +99,7 @@ function printRequest(req: RestRequest, options: Options) {
     console.log(req.getSlug());
     
     if (options.headers) {
-        console.log(req.headers.toString());
+        console.log(headersAsString(req.headers));
     }
     if (options.body) {
         console.log(req.getBody());
@@ -112,7 +112,7 @@ function printResponse(res: EntityResponse, options: Options) {
         console.log(`HTTP/1.1 ${res.status} ${res.statusText}`);
     }
     if (options.headers) {
-        console.log(res.headers.toString());
+        console.log(headersAsString(res.headers));
     }
     if (options.body) {
         console.log(bodyAsString(res.body));
