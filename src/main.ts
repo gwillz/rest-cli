@@ -9,11 +9,11 @@ if (require.main === module) {
     main();
 }
 
-async function main() {
-    const args = getArgs(["short"]);
+export async function main(argv = process.argv) {
+    const args = getArgs(["short"], argv);
     const parser = new RestParser();
     
-    console.log(args);
+    const retries = +args.options.retry || 3;
     
     for (let filepath of args.args) {
         if (!filepath) continue;
