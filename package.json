@@ -9,7 +9,8 @@
     "dev": "ts-node src/main.ts",
     "test": "tape -r ts-node/register tests/*.test.ts | tap-spec",
     "serve": "ts-node tests/app.ts",
-    "prepare": "tsc -b && echo kk"
+    "prepack": "tsc -b",
+    "build": "tsc -b"
   },
   "files": [
     "dist/src",
@@ -17,7 +18,7 @@
     "LICENSE.md"
   ],
   "bin": {
-    "unwind-js": "dist/src/main.js"
+    "rest-cli": "dist/src/main.js"
   },
   "repository": {
     "type": "git",
