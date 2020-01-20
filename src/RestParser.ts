@@ -10,17 +10,30 @@ type Step = "init" | "request" | "body" | "file";
 
 export class RestParser {
     
-    names: string[] = [];
-    requests: RestRequest[] = [];
+    names: Record<string, number>;
+    requests: RestRequest[];
     vars: VarMap;
     
     constructor() {
-        this.names = [];
+        this.names = {};
         this.requests = [];
         this.vars = new VarMap();
     }
     
-    public async *get(): AsyncGenerator<RestRequest> {
+    public get(name: number | string): RestRequest | null {
+        if (typeof name === "number") {
+            return this.requests[name] || null;
+        }
+        else if (typeof name === "string") {
+            const index = this.names[name];
+            return this.requests[index] || null;
+        }
+        else {
+            return null;
+        }
+    }
+    
+    public async *getAll(): AsyncGenerator<RestRequest> {
         for (let req of this.requests) {
             yield await req.fill(this.vars);
         }
@@ -92,8 +105,12 @@ export class RestParser {
             // no request
             if (!request) continue;
             
-            if (this.names.includes(name)) {
+            if (name && this.names[name]) {
                 throw new Error("duplicate name: " + name);
+            }
+            
+            if (name) {
+                this.names[name] = this.requests.length;
             }
             
             this.requests.push(new RestRequest(filepath, {

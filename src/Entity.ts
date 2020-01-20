@@ -42,7 +42,7 @@ export class Entity {
         
         out += `HTTP/1.1 ${status} ${statusText}\n`;
         
-        for (let [name, value] of Object.entries(headers)) {
+        for (let [name, value] of headers.getAll()) {
             out += `${name}: ${value}\n`;
         }
         

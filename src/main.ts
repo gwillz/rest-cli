@@ -29,10 +29,10 @@ async function main() {
     
     try {
         let i = 0;
-        for await (let req of parser.get()) {
+        for await (let req of parser.getAll()) {
             i++;
             
-            await retry(3, async attempt => {
+            await retry(retries, async attempt => {
                 console.log(`${i}: [${attempt}] ${req.toString()}`);
                 
                 let entity = await req.request();
