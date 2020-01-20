@@ -6,6 +6,7 @@ import { Method } from "./Token";
 import { VarMap } from './VarMap';
 import { Entity } from './Entity';
 import { HeaderMap } from './HeaderMap';
+import { bodyAsString } from './utils';
 
 type StringMap = Record<string, string>;
 
@@ -78,7 +79,15 @@ export class RestRequest {
         return new Entity(this, res);
     }
     
-    public toString() {
-        return `${this.method.padEnd(6)} ${this.url}`;
+    public getFileName() {
+        return path.basename(this.sourcePath);
+    }
+    
+    public getSlug(): string {
+        return `${this.method} ${this.url}`;
+    }
+    
+    public getBody(): string {
+        return bodyAsString(this.body);
     }
 }

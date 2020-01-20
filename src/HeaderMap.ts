@@ -64,4 +64,14 @@ export class HeaderMap {
             yield [capitalise(name, '-'), value];
         }
     }
+    
+    public toString(): string {
+        let out = "";
+        
+        for (let [name, value] of this.getAll()) {
+            out += `${name}: ${value}\n`;
+        }
+        
+        return out;
+    }
 }

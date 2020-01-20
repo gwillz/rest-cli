@@ -21,26 +21,20 @@ rest-cli requests/*.http
 # Modify retry count (default: 3).
 rest-cli --retry 5 myrequest.http
 
-# Show full request/response bodies.
-rest-cli --full myrequest.http
+# A named request within a file.
+rest-cli --pick myname myrequest.http
 
 # Hide the stats (1: [2]).
 rest-cli --no-stats myrequest.http
 
-# Show the request body and headers.
-rest-cli --req myrequest.http
+# Show the request.
+rest-cli --request slug|headers|body myrequest.http
 
-# Show the response body and headers.
-rest-cli --res myrequest.http
+# Show the response.
+rest-cli --response slug|headers|body myrequest.http
 
-# Show the request headers.
-rest-cli --res-headers myrequest.http
-
-# Show the response headers.
-rest-cli --res-headers myrequest.http
-
-# An named request within a file.
-rest-cli --pick myname myrequest.http
+# Show everything.
+rest-cli --full myrequest.http
 ```
 
 
@@ -55,7 +49,7 @@ import { RestParser } from 'rest-cli';
     const parser = new RestParser();
     await parser.readFile("./myrequest.http");
     
-    const request = parser.get(0);
+    const request = await parser.get(0);
     console.log(request.toString());
     
     const { response } = await request.request();

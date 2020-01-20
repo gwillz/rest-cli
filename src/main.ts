@@ -1,7 +1,9 @@
 
 import path from 'path';
 import { RestParser } from './RestParser';
-import { isAxiosError, getArgs, retry } from './utils';
+import { isAxiosError, getArgs, retry, bodyAsString } from './utils';
+import { EntityResponse } from './Entity';
+import { RestRequest } from './RestRequest';
 
 if (require.main === module) {
     require('source-map-support').install();
@@ -10,12 +12,26 @@ if (require.main === module) {
 }
 
 export async function main(argv = process.argv) {
-    const args = getArgs(["short"], argv);
+    const { args, options } = getArgs([
+        "full",
+        "help",
+    ], argv);
+    
+    if (options.help) {
+        help();
+        return;
+    }
+    
+    const retryMax = +options.retry || 3;
+    const requestName = options.pick;
+    const showStats = !options["no-stats"];
+    
+    const showRequest = showOptions(!!options.full, options.request);
+    const showResponse = showOptions(!!options.full, options.response);
+    
     const parser = new RestParser();
     
-    const retries = +args.options.retry || 3;
-    
-    for (let filepath of args.args) {
+    for (let filepath of args) {
         if (!filepath) continue;
         filepath = path.resolve(filepath);
         
@@ -24,28 +40,51 @@ export async function main(argv = process.argv) {
     
     if (parser.isEmpty()) {
         console.log("No files.");
+        console.log("");
+        help();
         return;
     }
     
     try {
-        let i = 0;
-        for await (let req of parser.getAll()) {
-            i++;
+        if (requestName) {
+            const req = await parser.get(requestName);
             
-            await retry(retries, async attempt => {
-                console.log(`${i}: [${attempt}] ${req.toString()}`);
+            if (!req) {
+                console.log(`Cannot find request: ${requestName}`);
+                return;
+            }
+            
+            await retry(retryMax, async attempt => {
+                if (showStats) {
+                    process.stdout.write(`${requestName}: [${attempt}] `);
+                }
+                printRequest(req, showRequest);
                 
                 let entity = await req.request();
                 
-                if (!args.options.short) {
-                    console.log("");
-                    console.log(entity.toString());
-                }
+                printResponse(entity.response, showResponse);
+            });
+        }
+        else {
+            let index = 0;
+            for await (let req of parser.getAll()) {
+                index++;
                 
-                if (req.name) {
-                    parser.vars.addEntity(req.name, entity);
-                }
-            })
+                await retry(retryMax, async attempt => {
+                    if (showStats) {
+                        process.stdout.write(`${req.getFileName()}:${index} [${attempt}] `);
+                    }
+                    printRequest(req, showRequest);
+                    
+                    let entity = await req.request();
+                    
+                    if (req.name) {
+                        parser.vars.addEntity(req.name, entity);
+                    }
+                    
+                    printResponse(entity.response, showResponse);
+                });
+            }
         }
     }
     catch (error) {
@@ -54,4 +93,60 @@ export async function main(argv = process.argv) {
             console.log(error.response.data);
         }
     }
+}
+
+function printRequest(req: RestRequest, options: Options) {
+    console.log(req.getSlug());
+    
+    if (options.headers) {
+        console.log(req.headers.toString());
+    }
+    if (options.body) {
+        console.log(req.getBody());
+        console.log("");
+    }
+}
+
+function printResponse(res: EntityResponse, options: Options) {
+    if (options.slug) {
+        console.log(`HTTP/1.1 ${res.status} ${res.statusText}`);
+    }
+    if (options.headers) {
+        console.log(res.headers.toString());
+    }
+    if (options.body) {
+        console.log(bodyAsString(res.body));
+        console.log("");
+    }
+}
+
+type Options = {
+    slug: boolean;
+    headers: boolean;
+    body: boolean;
+}
+
+function showOptions(full: boolean, option: string): Options {
+    return {
+        slug: full || option == "slug" || option == "headers" || option == "body",
+        headers: full || option == "headers" || option == "body",
+        body: full || option == "body",
+    }
+}
+
+function help() {
+    console.log("rest-cli: A HTTP/REST file sequencer.");
+    console.log("");
+    console.log("Usage:");
+    console.log("  rest-cli {options} file1 file2 ...");
+    console.log("");
+    console.log("options:");
+    console.log("  --retry <number> (default: 3)");
+    console.log("  --pick <name>");
+    console.log("  --no-stats");
+    console.log("  --body <request|response|both>");
+    console.log("  --headers <request|response|both>");
+    console.log("  --full");
+    console.log("  --help");
+    console.log("");
 }

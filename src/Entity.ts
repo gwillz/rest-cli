@@ -4,12 +4,12 @@ import { RestRequest } from "./RestRequest";
 import { AxiosResponse } from "axios";
 import { HeaderMap } from "./HeaderMap";
 
-interface EntityRequest {
+export interface EntityRequest {
     body: string | Buffer | null;
     headers: HeaderMap;
 }
 
-interface EntityResponse {
+export interface EntityResponse {
     body: any;
     headers: HeaderMap;
     statusText: string;
@@ -34,22 +34,5 @@ export class Entity {
             statusText: res.statusText,
             status: res.status,
         };
-    }
-    
-    public toString(): string {
-        const { body, headers, status, statusText } = this.response;
-        let out = "";
-        
-        out += `HTTP/1.1 ${status} ${statusText}\n`;
-        
-        for (let [name, value] of headers.getAll()) {
-            out += `${name}: ${value}\n`;
-        }
-        
-        out += "\n";
-        out += bodyAsString(body);
-        out += "\n";
-        
-        return out;
     }
 }

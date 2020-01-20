@@ -20,13 +20,19 @@ export class RestParser {
         this.vars = new VarMap();
     }
     
-    public get(name: number | string): RestRequest | null {
+    public async get(name: number | string): Promise<RestRequest | null> {
+        let found: RestRequest | undefined;
+        
         if (typeof name === "number") {
-            return this.requests[name] || null;
+            found = this.requests[name];
         }
         else if (typeof name === "string") {
             const index = this.names[name];
-            return this.requests[index] || null;
+            found = this.requests[index];
+        }
+        
+        if (found) {
+            return found.fill(this.vars);
         }
         else {
             return null;
