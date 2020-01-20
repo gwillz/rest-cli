@@ -6,12 +6,18 @@ import { bodyAsString, safeParseJson, StringMap, basicAuth } from './utils';
 import { EntityMap, Entity } from './Entity';
 import { Headers } from 'node-fetch';
 
+import FUNCTIONS, { isFunction } from './functions';
+
 type Props = {
     variables?: StringMap,
     entities?: EntityMap;
 }
 
-const RE = /{{([^.}]+)(?:\.(request|response)\.(body|headers)\.((\$|\/\/)?[^}]+))?}}/g;
+// const RE = /{{([^.}]+)(?:\.(request|response)\.(body|headers)\.((\$|\/\/)?[^}]+))?}}/g;
+const RE = /{{([^}]+)}}/g;
+const FUNCTION_RE = /^\$([^\s]+)\s?(\.+)?/;
+const HEADER_RE = /^([^.]+)\.(request|response)\.headers\.(.+)/;
+const BODY_RE = /^([^.]+)\.(request|response)\.body\.?(\$|\/\/)?\.?([^}]+)?/;
 
 export class VarMap {
     
@@ -67,38 +73,50 @@ export class VarMap {
         return copy;
     }
     
-    private _replace(text: string, locals: StringMap): string {
-        // @todo separate regex:
-        // - variables
-        // - headers
-        // - body
-        // - functions
+    private _findHeader(content: string) {
+        const m = HEADER_RE.exec(content);
         
-        return text.replace(RE, (
-                _match: string,
-                root: string,
-                type?: "request" | "response",
-                property?: "body" | "headers",
-                path?: string,
-                mode?: "$" | "//") => {
+        if (m) {
+            let [_, root, type, name] = m;
             
-            // console.log("match", _match);
-            // console.log("root", root);
-            // console.log("type", type);
-            // console.log("property", property);
-            // console.log("mode", mode);
-            // console.log("path", path);
+            const entity = this.entities[root];
+            if (entity) {
+                const property = entity[type as "request" | "request"];
+                return property.headers.get(name);
+            }
+        }
+        
+        return "";
+    }
+    
+    private _findFunction(content: string) {
+        const m = FUNCTION_RE.exec(content);
+        
+        if (m) {
+            const [_, name, args] = m;
+            
+            // @todo $shared.
+            
+            if (isFunction(name)) {
+                const fn = FUNCTIONS[name];
+                return fn.apply(null, args.split(" "));
+            }
+        }
+        
+        return "";
+    }
+    
+    private _findBody(content: string) {
+        const m = BODY_RE.exec(content);
+        
+        if (m) {
+            const [_, root, type, mode, path] = m;
             
             // entity lookup.
-            if (type && property && path && this.entities[root]) {
-                let entity = this.entities[root][type];
+            if (this.entities[root]) {
+                const entity = this.entities[root][type as "request" | "response"];
                 
-                // headers
-                if (property === "headers") {
-                    return entity.headers.get(path) ?? "";
-                }
-                
-                let body = bodyAsString(entity.body);
+                const body = bodyAsString(entity.body);
                 
                 // empty
                 if (!body) return "";
@@ -122,11 +140,26 @@ export class VarMap {
                 // else
                 return body + "";
             }
+        }
         
-            // variable lookup.
-            else {
-                return locals[root] || "";
-            }
+        return "";
+    }
+    
+    private _replace(text: string, locals: StringMap): string {
+        
+        return text.replace(RE, (_: string, content: string) => {
+            
+            const header = this._findHeader(content);
+            if (header) return header;
+            
+            const fn = this._findFunction(content);
+            if (fn) return header;
+            
+            const body = this._findBody(content);
+            if (body) return body;
+            
+            // variables
+            return locals[content] || `{{${content}}}`;
         });
     }
 }
