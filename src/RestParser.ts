@@ -67,7 +67,7 @@ export class RestParser {
             let file = "";
             let name = "";
             
-            for (let line of part.split(/\n/)) {
+            for (let line of part.split(/[\n\r]+/)) {
                 let token = findToken(line);
                 
                 // variables
@@ -88,12 +88,12 @@ export class RestParser {
                     request.url += token.value;
                 }
                 // headers
-                else if (token && token.type == "header" && step == "request") {
+                else if (token && token.type == "header" && (step == "request" || step == "body")) {
                     headers[token.name.toLowerCase()] = token.value;
                     step = "body";
                 }
                 // file
-                else if (token && token.type == "file" && (step == "body" || step == "request")) {
+                else if (token && token.type == "file" && (step == "request" || step == "body")) {
                     file = token.path;
                     step = "file";
                 }

@@ -46,13 +46,11 @@ export class HeaderMap {
         return this.map[name.toLowerCase()];
     }
     
-    public addAll(other: StringMap | HeaderMap): void;
-    public addAll(other: any): void {
-        
+    public addAll(other: StringMap | HeaderMap): void {
         const entities =
             isHeaderMap(other)
             ? other.getAll()
-            : Object.entries(other) as [string, string][];
+            : Object.entries(other);
         
         for (let [name, value] of entities) {
             this.add(name.toLowerCase(), value);
