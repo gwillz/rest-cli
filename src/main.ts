@@ -14,6 +14,7 @@ if (require.main === module) {
 export async function main(argv = process.argv) {
     const { args, options } = getArgs([
         "full",
+        "no-stats",
         "help",
     ], argv);
     

@@ -137,7 +137,6 @@ GET {{baseUrl}}/comments/{{commentId}}/replies/{{getReplies.response.body.//repl
 ## TODO
 - variables are not file scoped
 - date custom formats should require quotes "" around them
-- automatic basic auth?
 - functions (aka. dynamic variables)
 - shared variables, environment files
 - pretty formatting XML/JSON in response bodies
@@ -145,9 +144,11 @@ GET {{baseUrl}}/comments/{{commentId}}/replies/{{getReplies.response.body.//repl
 - multipart file loading support
 - cookies??
 - cli options for:
+  - timeout
   - environment file
   - config file
 - config file:
+  - timeout
   - followRedirects
   - defaultHeaders?
   - proxy?

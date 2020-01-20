@@ -186,3 +186,8 @@ export function formatDate(date: DateTime, format: string) {
             return date.toFormat(format);
     }
 }
+
+export function basicAuth(username: string, password: string) {
+    const base64 = Buffer.from(username + ':' + password).toString('base64');
+    return 'Basic ' + base64;
+}

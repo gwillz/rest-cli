@@ -4,13 +4,15 @@
     "incremental": true,
     "target": "es5",
     "module": "commonjs",
-    // "lib": [""],
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "./dist",
     // "rootDir": "./",
     "downlevelIteration": true,
+    
+    "lib": ["es6", "es2017"],
+    "types": ["node"],
     
     /* Strict Type-Checking Options */
     "strict": true,
@@ -20,7 +22,6 @@
 
     /* Module Resolution Options */
     "moduleResolution": "node",
-    // "types": ["node"],
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "allowUmdGlobalAccess": false,

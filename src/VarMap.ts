@@ -2,7 +2,7 @@
 import xpath from 'xpath';
 import { DOMParser } from 'xmldom';
 import { JSONPath } from 'jsonpath-plus';
-import { bodyAsString, safeParseJson, StringMap } from './utils';
+import { bodyAsString, safeParseJson, StringMap, basicAuth } from './utils';
 import { EntityMap, Entity } from './Entity';
 import { Headers } from 'node-fetch';
 
@@ -51,6 +51,17 @@ export class VarMap {
         
         for (let [name, value] of headers) {
             copy.append(name, this.replace(value));
+        }
+        
+        const auth = copy.get("authorization");
+        if (auth) {
+            const m = /^basic\s+([^\s]+)\s+(.+)/i.exec(auth);
+            
+            if (m) {
+                const [_, username, password] = m;
+                const basic = basicAuth(username, password);
+                copy.set("authorization", basic);
+            }
         }
         
         return copy;
