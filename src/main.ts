@@ -1,7 +1,7 @@
 
 import path from 'path';
 import { RestParser } from './RestParser';
-import { isAxiosError, getArgs, retry, bodyAsString } from './utils';
+import { getArgs, retry, bodyAsString, isServerError } from './utils';
 import { EntityResponse } from './Entity';
 import { RestRequest } from './RestRequest';
 
@@ -89,8 +89,8 @@ export async function main(argv = process.argv) {
     }
     catch (error) {
         console.log(error.message);
-        if (isAxiosError(error) && error.response) {
-            console.log(error.response.data);
+        if (isServerError(error)) {
+            console.log(await error.response.text());
         }
     }
 }

@@ -4,6 +4,7 @@ import { DOMParser } from 'xmldom';
 import { JSONPath } from 'jsonpath-plus';
 import { bodyAsString, safeParseJson, StringMap } from './utils';
 import { EntityMap, Entity } from './Entity';
+import { Headers } from 'node-fetch';
 
 type Props = {
     variables?: StringMap,
@@ -40,6 +41,16 @@ export class VarMap {
         
         for (let [name, value] of Object.entries(map)) {
             copy[name] = this._replace(value, this.variables);
+        }
+        
+        return copy;
+    }
+    
+    public replaceHeaders(headers: Headers): Headers {
+        const copy = new Headers();
+        
+        for (let [name, value] of headers) {
+            copy.append(name, this.replace(value));
         }
         
         return copy;

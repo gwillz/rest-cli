@@ -1,7 +1,8 @@
 
 import test from 'tape';
-import { VarMap, HeaderMap } from '../src';
+import { VarMap } from '../src';
 import { Entity } from '../src/Entity';
+import { Headers } from 'node-fetch';
 
 // @todo Test functions (aka. dynamic variables)
 
@@ -10,13 +11,13 @@ import { Entity } from '../src/Entity';
 function mockEntity(): Entity {
     return {
         request: {
-            headers: HeaderMap.from({
+            headers: new Headers({
                 'content-type': 'application/json',
             }),
             body: '{"one":{"two":3}}',
         },
         response: {
-            headers: HeaderMap.from({
+            headers: new Headers({
                 'content-type': 'text/xml',
             }),
             body: '<one><two three="four"/></one>',

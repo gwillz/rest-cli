@@ -1,8 +1,28 @@
 
-import { AxiosError } from 'axios';
 import { DurationObject, DateTime } from 'luxon';
+import { Response, Blob } from 'node-fetch';
 
 export type StringMap = Record<string, string>;
+
+export class ServerError extends Error {
+    
+    readonly name: "ServerError";
+    readonly url: string;
+    readonly status: number;
+    readonly response: Response;
+    
+    constructor(url: string, res: Response) {
+        super(res.statusText);
+        this.name = "ServerError";
+        this.url = url;
+        this.status = res.status;
+        this.response = res;
+    }
+}
+
+export function isServerError(test: any): test is ServerError {
+    return !!test && test.name === "ServerError";
+}
 
 export function tuple<T extends any[]> (...data: T) {
     return data;
@@ -25,17 +45,11 @@ export function bodyAsString(body: unknown): string {
 }
 
 
-export function isBuffer(test: unknown): test is Buffer {
+export function isBuffer(test: any): test is Buffer {
     return (
-        typeof test === "object" && 
         !!test &&
-        test.constructor.name === "Buffer"
+        test.constructor?.name === "Buffer"
     );
-}
-
-
-export function isAxiosError(test: any): test is AxiosError {
-    return !!test && test.isAxiosError;
 }
 
 

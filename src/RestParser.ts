@@ -124,7 +124,7 @@ export class RestParser {
                 url: request.url,
                 headers: headers,
                 name: name || undefined,
-                data: body || undefined,
+                body: body || undefined,
                 path: file || undefined,
             }));
         }

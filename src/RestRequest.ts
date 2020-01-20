@@ -1,29 +1,28 @@
 
 import path from 'path';
 import fs from 'fs-extra';
-import axios from 'axios';
+import fetch, { Headers } from 'node-fetch';
 import { Method } from "./Token";
 import { VarMap } from './VarMap';
 import { Entity } from './Entity';
-import { HeaderMap } from './HeaderMap';
-import { bodyAsString } from './utils';
+import { bodyAsString, ServerError } from './utils';
 
 type StringMap = Record<string, string>;
 
 interface Props {
     method: Method;
     url: string;
-    headers: StringMap | HeaderMap;
+    headers: StringMap | Headers;
     path?: string;
-    data?: Buffer | string;
+    body?: Buffer | string;
     name?: string;
 }
 
 export class RestRequest {
     method: Method;
     url: string;
-    headers: HeaderMap;
-    body: string | Buffer | null;
+    headers: Headers;
+    body: string | Buffer | undefined;
     
     sourcePath: string;
     filePath?: string;
@@ -33,16 +32,16 @@ export class RestRequest {
         this.sourcePath = sourcePath;
         this.method = props.method;
         this.url = props.url;
-        this.headers = HeaderMap.from(props.headers);
+        this.headers = new Headers(props.headers);
         
-        this.body = props.data ?? null;
+        this.body = props.body;
         this.filePath = props.path;
         this.name = props.name;
     }
     
     public async fill(vars: VarMap): Promise<RestRequest> {
         
-        let body: Buffer | string | null;
+        let body: Buffer | string | undefined;
         
         // load file
         if (this.filePath && !this.body) {
@@ -61,22 +60,25 @@ export class RestRequest {
         return new RestRequest(this.sourcePath, {
             method: this.method,
             url: vars.replace(this.url),
-            headers: this.headers.fill(vars),
-            data: body ?? undefined,
+            headers: vars.replaceHeaders(this.headers),
+            body: body,
             path: this.filePath,
             name: this.name,
         });
     }
     
     public async request(): Promise<Entity> {
-        const { method, headers, url, body: data } = this;
+        const { method, headers, url, body } = this;
         
-        const res = await axios.request({
-            url, method, headers, data,
-            transformResponse: res => res,
+        const res = await fetch(url, {
+            body,
+            headers,
+            method,
         });
         
-        return new Entity(this, res);
+        if (!res.ok) throw new ServerError(url, res);
+        
+        return await Entity.from(this, res);
     }
     
     public getFileName() {
