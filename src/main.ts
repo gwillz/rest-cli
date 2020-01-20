@@ -1,9 +1,11 @@
 
 import path from 'path';
+import chalk from 'chalk';
 import { RestParser } from './RestParser';
-import { getArgs, retry, bodyAsString, isServerError, headersAsString } from './utils';
+import { getArgs, retry, bodyAsString, isServerError, capitalise } from './utils';
 import { EntityResponse } from './Entity';
 import { RestRequest } from './RestRequest';
+import { Headers } from 'node-fetch';
 
 if (require.main === module) {
     require('source-map-support').install();
@@ -15,6 +17,7 @@ export async function main(argv = process.argv) {
     const { args, options } = getArgs([
         "full",
         "no-stats",
+        "no-color",
         "help",
     ], argv);
     
@@ -26,6 +29,11 @@ export async function main(argv = process.argv) {
     const retryMax = +options.retry || 3;
     const requestName = options.pick;
     const showStats = !options["no-stats"];
+    const showColor = !options["no-color"];
+    
+    if (!showColor) {
+        chalk.level = 0;
+    }
     
     const showRequest = showOptions(!!options.full, options.request);
     const showResponse = showOptions(!!options.full, options.response);
@@ -40,7 +48,7 @@ export async function main(argv = process.argv) {
     }
     
     if (parser.isEmpty()) {
-        console.log("No files.");
+        console.log(chalk`{red No files.}`);
         console.log("");
         help();
         return;
@@ -51,13 +59,13 @@ export async function main(argv = process.argv) {
             const req = await parser.get(requestName);
             
             if (!req) {
-                console.log(`Cannot find request: ${requestName}`);
+                console.log(chalk`{red Cannot find request:} {white ${requestName}}`);
                 return;
             }
             
             await retry(retryMax, async attempt => {
                 if (showStats) {
-                    process.stdout.write(`${requestName}: [${attempt}] `);
+                    process.stdout.write(chalk.grey(`${requestName}: [${attempt}] `));
                 }
                 printRequest(req, showRequest);
                 
@@ -73,7 +81,7 @@ export async function main(argv = process.argv) {
                 
                 await retry(retryMax, async attempt => {
                     if (showStats) {
-                        process.stdout.write(`${req.getFileName()}:${index} [${attempt}] `);
+                        process.stdout.write(chalk.grey(`${req.getFileName()}:${index} [${attempt}] `));
                     }
                     printRequest(req, showRequest);
                     
@@ -89,35 +97,43 @@ export async function main(argv = process.argv) {
         }
     }
     catch (error) {
-        console.log(error.message);
+        console.log(chalk.red(error.message));
         if (isServerError(error)) {
-            console.log(await error.response.text());
+            console.log(chalk.red(await error.response.text()));
         }
     }
 }
 
 function printRequest(req: RestRequest, options: Options) {
-    console.log(req.getSlug());
+    console.log(chalk.white(req.getSlug()));
     
     if (options.headers) {
-        console.log(headersAsString(req.headers));
+        printHeaders(req.headers);
     }
     if (options.body) {
-        console.log(req.getBody());
+        console.log("");
+        console.log(req.filePath ?? req.getBody());
         console.log("");
     }
 }
 
 function printResponse(res: EntityResponse, options: Options) {
     if (options.slug) {
-        console.log(`HTTP/1.1 ${res.status} ${res.statusText}`);
+        console.log(chalk.yellow(`HTTP/1.1 ${res.status} ${res.statusText}`));
     }
     if (options.headers) {
-        console.log(headersAsString(res.headers));
+        printHeaders(res.headers);
     }
     if (options.body) {
-        console.log(bodyAsString(res.body));
         console.log("");
+        console.log(bodyAsString(res.body, res.headers.get("content-type")));
+        console.log("");
+    }
+}
+
+function printHeaders(headers: Headers) {
+    for (let [name, value] of headers) {
+        console.log(chalk`{green ${capitalise(name, '-')}:} {greenBright ${value}}`);
     }
 }
 
@@ -144,10 +160,11 @@ function help() {
     console.log("options:");
     console.log("  --retry <number> (default: 3)");
     console.log("  --pick <name>");
-    console.log("  --no-stats");
     console.log("  --body <request|response|both>");
     console.log("  --headers <request|response|both>");
     console.log("  --full");
+    console.log("  --no-stats");
+    console.log("  --no-color");
     console.log("  --help");
     console.log("");
 }

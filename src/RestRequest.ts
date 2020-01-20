@@ -90,6 +90,6 @@ export class RestRequest {
     }
     
     public getBody(): string {
-        return bodyAsString(this.body);
+        return bodyAsString(this.body, this.headers.get("content-type"));
     }
 }

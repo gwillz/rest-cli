@@ -13,7 +13,6 @@ type Props = {
     entities?: EntityMap;
 }
 
-// const RE = /{{([^.}]+)(?:\.(request|response)\.(body|headers)\.((\$|\/\/)?[^}]+))?}}/g;
 const RE = /{{([^}]+)}}/g;
 const FUNCTION_RE = /^\$([^\s]+)\s?(\.+)?/;
 const HEADER_RE = /^([^.]+)\.(request|response)\.headers\.(.+)/;

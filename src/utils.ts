@@ -1,6 +1,7 @@
 
 import { DurationObject, DateTime } from 'luxon';
-import { Response, Headers } from 'node-fetch';
+import { Response } from 'node-fetch';
+import xmlFormat from 'xml-formatter';
 
 export type StringMap = Record<string, string>;
 
@@ -29,30 +30,33 @@ export function tuple<T extends any[]> (...data: T) {
 }
 
 
-export function bodyAsString(body: unknown): string {
-    if (!body) {
-        return "";
+export function bodyAsString(body: unknown, type?: string | null): string {
+    if (!body) return "";
+    
+    const content = isBuffer(body)
+        ? body.toString("utf-8")
+        : typeof body === "string"
+        ?  body
+        : "";
+    
+    if (content && type) {
+        if (type.startsWith("application/json")) {
+            return jsonFormat(content);
+        }
+        else if (type.startsWith("application/json")) {
+            return xmlFormat(content, { stripComments: false });
+        }
     }
-    else if (isBuffer(body)) {
-        return body.toString("utf-8");
-    }
-    else if (typeof body !== "string") {
-        return body + "";
-    }
-    else {
-        return body;
-    }
+    
+    return content || (body + "");
 }
 
 
-export function headersAsString(headers: Headers): string {
-    let out = "";
+export function jsonFormat(content: string) {
+    const json = safeParseJson(content);
+    if (!json) return content;
     
-    for (let [name, value] of headers) {
-        out += `${capitalise(name, '-')}: ${value}\n`;
-    }
-    
-    return out;
+    return JSON.stringify(json, undefined, 4);
 }
 
 

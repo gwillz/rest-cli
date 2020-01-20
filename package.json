@@ -34,6 +34,7 @@
     "@types/node-fetch": "^2.5.4",
     "@types/tape": "^4.2.33",
     "@types/uuid": "^3.4.6",
+    "@types/xml-formatter": "^1.1.0",
     "@types/xmldom": "^0.1.29",
     "express": "^4.17.1",
     "tap-spec": "^5.0.0",
@@ -42,6 +43,7 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
+    "chalk": "^3.0.0",
     "dotenv": "^8.2.0",
     "fs-extra": "^8.1.0",
     "jsonpath-plus": "^2.0.0",
@@ -49,6 +51,7 @@
     "node-fetch": "^2.6.0",
     "source-map-support": "^0.5.16",
     "uuid": "^3.4.0",
+    "xml-formatter": "^1.2.0",
     "xmldom": "^0.2.1",
     "xpath": "0.0.27"
   },
