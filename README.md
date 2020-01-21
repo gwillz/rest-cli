@@ -138,7 +138,6 @@ GET {{baseUrl}}/comments/{{commentId}}/replies/{{getReplies.response.body.//repl
 
 
 ## TODO
-- variables are not file scoped
 - shared variables, environment files
 - GraphQL support
 - multipart file loading support
@@ -146,6 +145,7 @@ GET {{baseUrl}}/comments/{{commentId}}/replies/{{getReplies.response.body.//repl
 - tests for:
   - functions
   - request (fill, slug, body)
+  - restfile
   - utils (basicAuth, bodyAsString, ServerError)
   - parser (out-of-order, iterator, get)
 - cli options for:

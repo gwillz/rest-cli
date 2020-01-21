@@ -2,7 +2,7 @@
 import xpath from 'xpath';
 import { DOMParser } from 'xmldom';
 import { JSONPath } from 'jsonpath-plus';
-import { bodyAsString, safeParseJson, StringMap, basicAuth } from './utils';
+import { safeParseJson, basicAuth, bodyAsString, StringMap } from './utils';
 import { EntityMap, Entity } from './Entity';
 import { Headers } from 'node-fetch';
 import FUNCTIONS, { isFunction } from './functions';
@@ -27,12 +27,17 @@ export class VarMap {
         this.entities = props?.entities ?? {};
     }
     
-    public addVars(variables: StringMap) {
-        this.variables = {...this.variables, ...variables};
+    // public addVars(variables: StringMap) {
+    //     this.variables = {...this.variables, ...variables};
+    // }
+    
+    public addVar(name: string, value: string) {
+        this.variables[name] = value;
     }
     
-    public addEntity(name: string, entity: Entity) {
-        this.entities[name] = entity;
+    public addEntity(entity: Entity) {
+        if (!entity.name) return;
+        this.entities[entity.name] = entity;
     }
     
     public replace(text: string): string {

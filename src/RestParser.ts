@@ -3,60 +3,55 @@ import fs from 'fs-extra';
 import { RestRequest } from './RestRequest';
 import { findToken, RequestToken } from './Token';
 import { VarMap } from './VarMap';
-
-type StringMap = Record<string, string>;
+import { RestFile } from './RestFile';
+import { StringMap } from './utils';
 
 type Step = "init" | "request" | "body" | "file";
 
+
 export class RestParser {
     
-    names: Record<string, number>;
-    requests: RestRequest[];
-    vars: VarMap;
+    files: RestFile[];
+    count: number;
     
     constructor() {
-        this.names = {};
-        this.requests = [];
-        this.vars = new VarMap();
+        this.files = [];
+        this.count = 0;
     }
     
-    public async get(name: number | string): Promise<RestRequest | null> {
-        let found: RestRequest | undefined;
-        
-        if (typeof name === "number") {
-            found = this.requests[name];
-        }
-        else if (typeof name === "string") {
-            const index = this.names[name];
-            found = this.requests[index];
+    public async get(name: string | number): Promise<RestRequest | null> {
+        for (let file of this.files) {
+            const req = await file.get(name);
+            if (req) return req;
         }
         
-        if (found) {
-            return found.fill(this.vars);
-        }
-        else {
-            return null;
+        return null;
+    }
+    
+    public *[Symbol.iterator](): Generator<RestFile> {
+        for (let file of this.files) {
+            yield file;
         }
     }
     
-    public async *getAll(): AsyncGenerator<RestRequest> {
-        for (let req of this.requests) {
-            yield await req.fill(this.vars);
-        }
+    public size() {
+        return this.count;
     }
     
     public isEmpty() {
-        return this.requests.length == 0;
+        return this.size() == 0;
     }
     
-    public async readFile(filepath: string) {
-        const contents = await fs.readFile(filepath, 'utf-8');
-        await this.readString(filepath, contents);
+    public async readFile(filePath: string) {
+        const contents = await fs.readFile(filePath, 'utf-8');
+        this.readString(filePath, contents);
+    }
+    
+    public readString(filePath: string, contents: string) {
         
-    }
-    
-    public readString(filepath: string, contents: string) {
-        const variables: StringMap = {};
+        const vars = new VarMap();
+        const names: string[] = [];
+        const requests: RestRequest[] = [];
         
         for (let part of contents.split(/###+.*\n/)) {
             let step: Step = "init";
@@ -64,7 +59,7 @@ export class RestParser {
             const headers: StringMap = {};
             let request: RequestToken | undefined = undefined;
             let body = "";
-            let file = "";
+            let filePath = "";
             let name = "";
             
             for (let line of part.split(/[\n\r]+/)) {
@@ -72,7 +67,7 @@ export class RestParser {
                 
                 // variables
                 if (token && token.type == "variable" && step == "init") {
-                    variables[token.name] = token.value;
+                    vars.addVar(token.name, token.value);
                 }
                 // name
                 else if (token && token.type == "name" && step == "init") {
@@ -94,7 +89,7 @@ export class RestParser {
                 }
                 // file
                 else if (token && token.type == "file" && (step == "request" || step == "body")) {
-                    file = token.path;
+                    filePath = token.path;
                     step = "file";
                 }
                 // body
@@ -111,24 +106,31 @@ export class RestParser {
             // no request
             if (!request) continue;
             
-            if (name && this.names[name]) {
-                throw new Error("duplicate name: " + name);
-            }
-            
             if (name) {
-                this.names[name] = this.requests.length;
+                if (names.includes(name)) {
+                    throw new Error("duplicate name: " + name);
+                }
+                else {
+                    names.push(name);
+                }
             }
             
-            this.requests.push(new RestRequest(filepath, {
+            requests.push(new RestRequest({
                 method: request.method,
                 url: request.url,
                 headers: headers,
                 name: name || undefined,
                 body: body || undefined,
-                path: file || undefined,
+                filePath: filePath || undefined,
             }));
+            
+            this.count++;
         }
         
-        this.vars.addVars(variables);
+        this.files.push(new RestFile({
+            filePath,
+            requests,
+            vars,
+        }))
     }
 }

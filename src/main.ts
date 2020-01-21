@@ -70,30 +70,35 @@ export async function main(argv = process.argv) {
                 }
                 printRequest(req, showRequest);
                 
-                let entity = await req.request();
+                let { response } = await req.request();
                 
-                printResponse(entity.response, showResponse);
+                printResponse(response, showResponse);
             });
         }
         else {
-            let index = 0;
-            for await (let req of parser.getAll()) {
-                index++;
+            for (let file of parser) {
+                let index = 0;
                 
-                await retry(retryMax, async attempt => {
-                    if (showStats) {
-                        process.stdout.write(chalk.grey(`${req.getFileName()}:${index} [${attempt}] `));
-                    }
-                    printRequest(req, showRequest);
+                for await (let req of file) {
+                    index++;
                     
-                    let entity = await req.request();
-                    
-                    if (req.name) {
-                        parser.vars.addEntity(req.name, entity);
-                    }
-                    
-                    printResponse(entity.response, showResponse);
-                });
+                    await retry(retryMax, async attempt => {
+                        if (showStats) {
+                            process.stdout.write(chalk.grey(`${file.getFileName()}:${index} [${attempt}] `));
+                        }
+                        printRequest(req, showRequest);
+                        
+                        const entity = await req.request();
+                        
+                        // console.log(req.name, entity.name);
+                        if (entity.name) {
+                            file.vars.addEntity(entity);
+                        }
+                        
+                        printResponse(entity.response, showResponse);
+                    });
+                }
+                
             }
         }
     }

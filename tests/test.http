@@ -12,7 +12,8 @@ Content-Type: application/json
 {
     "name": "Andrew",
     "email": "andrew@test.me",
-    "password": "{{password}}"
+    "password": "{{password}}",
+    "birthday": "{{$datetime iso8601 -32 y}}"
 }
 
 ###

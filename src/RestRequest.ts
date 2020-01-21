@@ -14,7 +14,7 @@ interface Props {
     method: Method;
     url: string;
     headers: StringMap | Headers;
-    path?: string;
+    filePath?: string;
     body?: Buffer | string;
     name?: string;
 }
@@ -25,30 +25,28 @@ export class RestRequest {
     headers: Headers;
     body: string | Buffer | undefined;
     
-    sourcePath: string;
     filePath?: string;
     name?: string;
     
-    constructor(sourcePath: string, props: Props) {
-        this.sourcePath = sourcePath;
+    constructor(props: Props) {
         this.method = props.method;
         this.url = props.url;
         this.headers = new Headers(props.headers);
         
         this.body = props.body;
-        this.filePath = props.path;
+        this.filePath = props.filePath;
         this.name = props.name;
     }
     
-    public async fill(vars: VarMap): Promise<RestRequest> {
+    public async fill(sourcePath: string, vars: VarMap): Promise<RestRequest> {
         
         let body: Buffer | string | undefined;
         
         // load file
         if (this.filePath && !this.body) {
-            const root = path.dirname(this.sourcePath);
-            const filepath = path.resolve(root, this.filePath);
-            body = await fs.readFile(filepath);
+            const root = path.dirname(sourcePath);
+            const fullPath = path.resolve(root, this.filePath);
+            body = await fs.readFile(fullPath);
         }
         else if (typeof this.body === "string") {
             body = vars.replace(this.body);
@@ -58,12 +56,12 @@ export class RestRequest {
         }
         
         // remap variables.
-        return new RestRequest(this.sourcePath, {
+        return new RestRequest({
             method: this.method,
             url: vars.replace(this.url),
             headers: vars.replaceHeaders(this.headers),
             body: body,
-            path: this.filePath,
+            filePath: this.filePath,
             name: this.name,
         });
     }
@@ -82,15 +80,11 @@ export class RestRequest {
         return await Entity.from(this, res);
     }
     
-    public getFileName() {
-        return path.basename(this.sourcePath);
-    }
-    
     public getSlug(): string {
         return `${this.method} ${this.url}`;
     }
     
     public getBody(): string {
-        return bodyAsString(this.body, this.headers.get("content-type"));
+        return bodyAsString(this.body);
     }
 }
