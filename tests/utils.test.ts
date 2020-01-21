@@ -15,6 +15,11 @@ test("utils: bodyAsString", assert => {
         const expected = "a whole bunch of stuff";
         assert.equals(actual, expected);
     }
+    
+    // @todo Test pretty JSON
+    
+    // @todo Test pretty XML
+    
     assert.end();
 });
 
@@ -223,8 +228,13 @@ test("utils: formatDate", assert => {
         assert.equals(actual, expected);
     }
     {
-        const actual = utils.formatDate(date, "yyyy-MM-d");
+        const actual = utils.formatDate(date, "\"YYYY-MM-D\"");
         const expected = "2000-03-4";
+        assert.equals(actual, expected);
+    }
+    {
+        const actual = utils.formatDate(date, "y");
+        const expected = "y";
         assert.equals(actual, expected);
     }
     

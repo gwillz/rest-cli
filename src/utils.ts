@@ -2,6 +2,7 @@
 import { DurationObject, DateTime } from 'luxon';
 import { Response } from 'node-fetch';
 import xmlFormat from 'xml-formatter';
+import fecha from 'fecha';
 
 export type StringMap = Record<string, string>;
 
@@ -186,8 +187,16 @@ export function formatDate(date: DateTime, format: string) {
             return date.toHTTP();
         case "iso8601":
             return date.toISO();
-        default:
-            return date.toFormat(format);
+    }
+    
+    const m = /"([^"]+)"/.exec(format);
+    if (!m) return format;
+    
+    try {
+        return fecha.format(date.toJSDate(), m[1]);
+    }
+    catch (error) {
+        return m[1];
     }
 }
 
