@@ -1,7 +1,18 @@
 
 import test from 'tape';
+import path from 'path';
 import * as utils from '../src/utils';
 import { DateTime } from 'luxon';
+
+const r = path.resolve.bind(null, __dirname);
+
+// @todo test bodyFormat.
+// @todo test jsonFormat.
+// @todo test xmlFormat.
+// @todo test basicAuth.
+
+// @todo formatJson instead of jsonFormat?
+// Or dateFormat instead of formatDate?
 
 test("utils: bodyAsString", assert => {
     {
@@ -15,10 +26,6 @@ test("utils: bodyAsString", assert => {
         const expected = "a whole bunch of stuff";
         assert.equals(actual, expected);
     }
-    
-    // @todo Test pretty JSON
-    
-    // @todo Test pretty XML
     
     assert.end();
 });
@@ -230,3 +237,50 @@ test("utils: formatDate", assert => {
     assert.end();
 });
 
+test("utils: expandPaths directory", async assert => {
+    try {
+        const actual = await toArray(utils.expandPaths("tests/"));
+        const expected = [
+            r("test-2.http"),
+            r("test-3.rest"),
+            r("test.http"),
+        ];
+        
+        actual.sort();
+        assert.deepEquals(actual, expected);
+    }
+    catch (error) {
+        assert.fail(error);
+    }
+    finally {
+        assert.end();
+    }
+});
+
+test("utils: expandPaths glob", async assert => {
+    try {
+        const actual = await toArray(utils.expandPaths("tests/*.http"));
+        const expected = [
+            r("test-2.http"),
+            r("test.http"),
+        ];
+        
+        actual.sort();
+        assert.deepEquals(actual, expected);
+    }
+    catch (error) {
+        assert.fail(error);
+    }
+    finally {
+        assert.end();
+    }
+});
+
+// @todo Move to utils?
+async function toArray<T>(generator: AsyncGenerator<T>): Promise<T[]> {
+    const list: T[] = [];
+    for await (let item of generator) {
+        list.push(item);
+    }
+    return list;
+}

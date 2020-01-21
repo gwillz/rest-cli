@@ -1,11 +1,13 @@
 
-import { DurationObject, DateTime } from 'luxon';
-import xmlFormat from 'xml-formatter';
+import path from 'path';
+import fs from 'fs-extra';
+import realGlob from 'glob';
 import fecha from 'fecha';
+import xmlFormat from 'xml-formatter';
+import { DurationObject, DateTime } from 'luxon';
 import { Headers } from 'node-fetch';
 
 export type StringMap = Record<string, string>;
-
 
 export function bodyAsString(body: unknown): string {
     if (!body) return "";
@@ -180,4 +182,36 @@ export function formatDate(date: DateTime, format: string) {
 export function basicAuth(username: string, password: string) {
     const base64 = Buffer.from(username + ':' + password).toString('base64');
     return 'Basic ' + base64;
+}
+
+// @todo Should the extension regex be an argument?
+export async function* expandPaths(...patterns: string[]): AsyncGenerator<string> {
+    for (let pattern of patterns) {
+        if (!pattern) continue;
+        
+        for (let pathname of await glob(pattern)) {
+            const stats = await fs.lstat(pathname);
+            
+            if (stats.isFile()) {
+                if (!pathname.match(/\.(http|rest)$/)) continue;
+                yield path.resolve(pathname);
+            }
+            else if (stats.isDirectory()) {
+                for (let subPath of await fs.readdir(pathname)) {
+                    if (!subPath.match(/\.(http|rest)$/)) continue;
+                    
+                    yield path.resolve(pathname, subPath);
+                }
+            }
+        }
+    }
+}
+
+export async function glob(pattern: string): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+        realGlob(pattern, (error, matches) => {
+            if (error) reject(error);
+            else resolve(matches);
+        })
+    });
 }

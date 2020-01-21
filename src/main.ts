@@ -1,12 +1,11 @@
 #!/usr/bin/node
 
-import path from 'path';
 import chalk from 'chalk';
 import { Headers } from 'node-fetch';
 import { RestParser } from './RestParser';
 import { RestRequest } from './RestRequest';
 import { isServerError } from './ServerError';
-import { getArgs, retry, capitalise, bodyFormat } from './utils';
+import { getArgs, retry, capitalise, bodyFormat, expandPaths } from './utils';
 import { EntityResponse } from './Entity';
 
 if (require.main === module) {
@@ -42,11 +41,8 @@ export async function main(argv = process.argv) {
     
     const parser = new RestParser();
     
-    for (let filepath of args) {
-        if (!filepath) continue;
-        filepath = path.resolve(filepath);
-        
-        await parser.readFile(filepath);
+    for await (let filePath of expandPaths(...args)) {
+        await parser.readFile(filePath);
     }
     
     if (parser.isEmpty()) {
