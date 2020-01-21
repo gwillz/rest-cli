@@ -1,11 +1,12 @@
 
 import path from 'path';
 import chalk from 'chalk';
-import { RestParser } from './RestParser';
-import { getArgs, retry, bodyAsString, isServerError, capitalise } from './utils';
-import { EntityResponse } from './Entity';
-import { RestRequest } from './RestRequest';
 import { Headers } from 'node-fetch';
+import { RestParser } from './RestParser';
+import { RestRequest } from './RestRequest';
+import { isServerError } from './ServerError';
+import { getArgs, retry, capitalise, bodyFormat } from './utils';
+import { EntityResponse } from './Entity';
 
 if (require.main === module) {
     require('source-map-support').install();

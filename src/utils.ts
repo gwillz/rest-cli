@@ -1,34 +1,9 @@
 
 import { DurationObject, DateTime } from 'luxon';
-import { Response } from 'node-fetch';
 import xmlFormat from 'xml-formatter';
 import fecha from 'fecha';
 
 export type StringMap = Record<string, string>;
-
-export class ServerError extends Error {
-    
-    readonly name: "ServerError";
-    readonly url: string;
-    readonly status: number;
-    readonly response: Response;
-    
-    constructor(url: string, res: Response) {
-        super(res.statusText);
-        this.name = "ServerError";
-        this.url = url;
-        this.status = res.status;
-        this.response = res;
-    }
-}
-
-export function isServerError(test: any): test is ServerError {
-    return !!test && test.name === "ServerError";
-}
-
-export function tuple<T extends any[]> (...data: T) {
-    return data;
-}
 
 
 export function bodyAsString(body: unknown, type?: string | null): string {

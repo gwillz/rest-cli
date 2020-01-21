@@ -4,8 +4,9 @@ import fs from 'fs-extra';
 import fetch, { Headers } from 'node-fetch';
 import { Method } from "./Token";
 import { VarMap } from './VarMap';
+import { bodyAsString } from './utils';
+import { ServerError } from './ServerError';
 import { Entity } from './Entity';
-import { bodyAsString, ServerError } from './utils';
 
 type StringMap = Record<string, string>;
 
