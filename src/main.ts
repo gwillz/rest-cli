@@ -1,3 +1,4 @@
+#!/usr/bin/node
 
 import path from 'path';
 import chalk from 'chalk';
