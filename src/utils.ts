@@ -34,7 +34,7 @@ export function tuple<T extends any[]> (...data: T) {
 export function bodyAsString(body: unknown, type?: string | null): string {
     if (!body) return "";
     
-    const content = isBuffer(body)
+    return Buffer.isBuffer(body)
         ? body.toString("utf-8")
         : typeof body === "string"
         ?  body
@@ -59,15 +59,6 @@ export function jsonFormat(content: string) {
     
     return JSON.stringify(json, undefined, 4);
 }
-
-
-export function isBuffer(test: any): test is Buffer {
-    return (
-        !!test &&
-        test.constructor?.name === "Buffer"
-    );
-}
-
 
 export function safeParseJson(body: string): any {
     try {

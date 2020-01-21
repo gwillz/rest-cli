@@ -23,17 +23,6 @@ test("utils: bodyAsString", assert => {
     assert.end();
 });
 
-test("utils: isBuffer", assert => {
-    assert.false(utils.isBuffer(1));
-    assert.false(utils.isBuffer("stuff"));
-    assert.false(utils.isBuffer({}));
-    assert.false(utils.isBuffer({constructor: "neat"}));
-    
-    assert.true(utils.isBuffer(Buffer.from("")));
-    
-    assert.end();
-});
-
 test("utils: safeParseJson", assert => {
     {
         const actual = utils.safeParseJson('{"one": 2, "um": [{"3": "four"}]}');
