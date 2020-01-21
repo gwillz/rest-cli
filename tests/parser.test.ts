@@ -21,4 +21,8 @@ test("RestParser: read", assert => {
 // @todo Test out-of-order parsing
 
 // @todo Test async iterator (using variable fills)
+
+// @todo Test get(index)
+
+// @todo Test get(name)
  

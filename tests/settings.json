@@ -1,0 +1,15 @@
+{
+    "rest-client.environmentVariables": {
+        "$shared": {
+            "host": "http://localhost:8080",
+            "api": "/api/v0"
+        },
+        "local": {
+            "password": "1234567890"
+        },
+        "production": {
+            "host": "http://example.com",
+            "password": "REDACTED"
+        }
+    }
+}

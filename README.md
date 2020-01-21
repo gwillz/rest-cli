@@ -35,6 +35,9 @@ rest-cli --response slug|headers|body myrequest.http
 
 # Show everything.
 rest-cli --full myrequest.http
+
+# Disable colour.
+rest-cli --no-color myrequest.http
 ```
 
 
@@ -143,6 +146,11 @@ GET {{baseUrl}}/comments/{{commentId}}/replies/{{getReplies.response.body.//repl
 - GraphQL support
 - multipart file loading support
 - cookies??
+- tests for:
+  - functions
+  - request (fill, slug, body)
+  - utils (basicAuth, bodyAsString, ServerError)
+  - parser (out-of-order, iterator, get)
 - cli options for:
   - timeout
   - environment file
