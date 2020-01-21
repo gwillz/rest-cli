@@ -18,6 +18,9 @@ rest-cli myrequest.http
 # A sequence of files.
 rest-cli requests/*.http
 
+# All .http files in the current directory.
+rest-cli .
+
 # Modify retry count (default: 3).
 rest-cli --retry 5 myrequest.http
 
@@ -60,7 +63,7 @@ import { RestParser } from 'rest-cli';
     console.log(request.toString());
     
     const { response } = await request.request();
-    console.log(response.body);
+    console.log(response.getBody());
 })();
 ```
 
@@ -133,8 +136,8 @@ GET {{baseUrl}}/comments/{{commentId}}/replies/{{getReplies.response.body.//repl
 
 
 ## Not supported
-- aadToken
-- extension environment variables
+- $aadToken
+- extension (%varname) environment variables
 
 
 ## TODO
