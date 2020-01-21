@@ -16,6 +16,9 @@ export function randomInt(min?: string, max?: string) {
 }
 
 export function timestamp(offset?: string, option?: string) {
+    if (offset != void 0 && option == void 0) {
+        throw new Error("timestamp missing [offset option].");
+    }
     return getOffset(DateTime.utc(), offset, option).toMillis() + "";
 }
 
@@ -23,12 +26,19 @@ export function datetime(format?: string, offset?: string, option?: string) {
     if (format == void 0) {
         throw new Error("datetime requires 'format'.");
     }
+    if (offset != void 0 && option == void 0) {
+        throw new Error("datetime missing [offset option].");
+    }
+    
     return formatDate(getOffset(DateTime.utc(), offset, option), format);
 }
 
 export function localDatetime(format?: string, offset?: string, option?: string) {
     if (format == void 0) {
         throw new Error("localDatetime requires 'format'.");
+    }
+    if (offset != void 0 && option == void 0) {
+        throw new Error("localDatetime missing [offset option].");
     }
     return formatDate(getOffset(DateTime.local(), offset, option), format);
 }
@@ -50,6 +60,7 @@ export function dotenv(name?: string) {
 type GenericFn = (...args: string[]) => string;
 
 const fns: Record<string, GenericFn> = {
+    guid,
     randomInt,
     timestamp,
     datetime,

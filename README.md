@@ -139,10 +139,7 @@ GET {{baseUrl}}/comments/{{commentId}}/replies/{{getReplies.response.body.//repl
 
 ## TODO
 - variables are not file scoped
-- date custom formats should require quotes "" around them
-- functions (aka. dynamic variables)
 - shared variables, environment files
-- pretty formatting XML/JSON in response bodies
 - GraphQL support
 - multipart file loading support
 - cookies??

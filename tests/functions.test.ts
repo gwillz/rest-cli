@@ -49,13 +49,15 @@ test("functions: timestamp offset", assert => {
     const actual = (+now / 100).toFixed(0);
     const expected = (+new Date() / 100).toFixed();
     
+    // @todo Not great.
     assert.notEquals(actual, expected);
-    // @todo More.
     
     assert.end();
 });
 
-// @todo localDateTime
+// @todo datetime
+
+// @todo localDatetime
 
 // @todo processEnv
 

@@ -4,8 +4,6 @@ import { VarMap } from '../src';
 import { Entity } from '../src/Entity';
 import { Headers } from 'node-fetch';
 
-// @todo Test functions (aka. dynamic variables)
-
 // @todo Test shared variables
 
 function mockEntity(): Entity {
@@ -83,6 +81,70 @@ test("VarMap: response xml body", assert => {
     
     const actual = vars.replace("{{test.response.body.//@three}}");
     const expected = "four";
+    
+    assert.equals(actual, expected);
+    assert.end();
+});
+
+test("VarMap: $guid", assert => {
+    const vars = new VarMap();
+    
+    const actual = vars.replace("{{$guid}}");
+    
+    assert.equals(actual.length, 36, "bad: " + actual);
+    assert.end();
+});
+
+test("VarMap: $randomInt", assert => {
+    const save = Math.random;
+    Math.random = () => 0.5;
+    
+    const vars = new VarMap();
+    
+    const actual = vars.replace("{{$randomInt 50 150}}");
+    const expected = "100";
+    
+    assert.equals(actual, expected);
+    assert.end();
+    
+    Math.random = save;
+});
+
+test("VarMap: $timestamp -60 seconds", assert => {
+    const vars = new VarMap();
+    
+    const actual = vars.replace("{{$timestamp -60 s}}");
+    const expected = (+new Date()) + "";
+    
+    assert.true(actual < expected, `${actual} < ${expected}`);
+    assert.end();
+});
+
+test("VarMap: $datetime rfc1123 -10 years", assert => {
+    const vars = new VarMap();
+    
+    const actual = vars.replace("{{$datetime rfc1123 -10 y}}");
+    const expected = (new Date().getUTCFullYear() - 10) + "";
+    
+    assert.true(actual.includes(expected), actual);
+    assert.end();
+});
+
+test("VarMap: $datetime iso8601", assert => {
+    const vars = new VarMap();
+    
+    const actual = vars.replace("{{$datetime iso8601}}");
+    const expected = new Date().toISOString();
+    
+    assert.true(actual, expected);
+    assert.end();
+});
+
+test("VarMap: $localDatetime custom", assert => {
+    const vars = new VarMap();
+    
+    const actual = vars.replace("{{$localDatetime \"D\"}}");
+    const expected = new Date().getDate() + "";
     
     assert.equals(actual, expected);
     assert.end();

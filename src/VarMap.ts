@@ -5,7 +5,6 @@ import { JSONPath } from 'jsonpath-plus';
 import { bodyAsString, safeParseJson, StringMap, basicAuth } from './utils';
 import { EntityMap, Entity } from './Entity';
 import { Headers } from 'node-fetch';
-
 import FUNCTIONS, { isFunction } from './functions';
 
 type Props = {
@@ -14,7 +13,7 @@ type Props = {
 }
 
 const RE = /{{([^}]+)}}/g;
-const FUNCTION_RE = /^\$([^\s]+)\s?(\.+)?/;
+const FUNCTION_RE = /^\$([^\s]+)\s?(.*)/;
 const HEADER_RE = /^([^.]+)\.(request|response)\.headers\.(.+)/;
 const BODY_RE = /^([^.]+)\.(request|response)\.body\.?((\$|\/\/)?[^}]+)?/;
 
@@ -98,7 +97,7 @@ export class VarMap {
             
             if (isFunction(name)) {
                 const fn = FUNCTIONS[name];
-                return fn.apply(null, args.split(" "));
+                return fn.apply(null, args.split(/\s+/));
             }
         }
         
@@ -155,7 +154,7 @@ export class VarMap {
             if (header) return header;
             
             const fn = this._findFunction(content);
-            if (fn) return header;
+            if (fn) return fn;
             
             const body = this._findBody(content);
             if (body) return body;
