@@ -16,7 +16,7 @@ type Props = {
 const RE = /{{([^}]+)}}/g;
 const FUNCTION_RE = /^\$([^\s]+)\s?(\.+)?/;
 const HEADER_RE = /^([^.]+)\.(request|response)\.headers\.(.+)/;
-const BODY_RE = /^([^.]+)\.(request|response)\.body\.?(\$|\/\/)?\.?([^}]+)?/;
+const BODY_RE = /^([^.]+)\.(request|response)\.body\.?((\$|\/\/)?[^}]+)?/;
 
 export class VarMap {
     
@@ -109,7 +109,7 @@ export class VarMap {
         const m = BODY_RE.exec(content);
         
         if (m) {
-            const [_, root, type, mode, path] = m;
+            const [_, root, type, path, mode] = m;
             
             // entity lookup.
             if (this.entities[root]) {
@@ -132,8 +132,11 @@ export class VarMap {
                 if (mode == "//") {
                     const xml = new DOMParser().parseFromString(body);
                     const target = xpath.select(path, xml, true);
-                    // @ts-ignore
-                    return target.value ?? target.toString();
+                    
+                    return target
+                        // @ts-ignore
+                        ? target.value ?? target.toString()
+                        : "";
                 }
                 
                 // else
