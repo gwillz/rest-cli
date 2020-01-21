@@ -189,7 +189,8 @@ export function formatDate(date: DateTime, format: string) {
             return date.toISO();
     }
     
-    const m = /"([^"]+)"/.exec(format);
+    // Yes, I know this allowed unmatched quotes like "etc'.
+    const m = /['"]([^"']+)["']/.exec(format);
     if (!m) return format;
     
     try {
