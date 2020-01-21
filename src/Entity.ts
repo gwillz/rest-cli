@@ -1,50 +1,55 @@
 
 import { RestRequest } from "./RestRequest";
 import { Response, Headers } from "node-fetch";
+import { bodyAsString } from "./utils";
+
+export type EntityMap = Record<string, Entity>;
 
 export interface EntityRequest {
     body: string | Buffer | undefined;
     headers: Headers;
+    getBody: () => string;
 }
 
 export interface EntityResponse {
-    body: any;
+    body: Buffer;
     headers: Headers;
     statusText: string;
     status: number;
+    getBody: () => string;
 }
 
-export type EntityMap = Record<string, Entity>;
-
 type Props = {
+    name?: string;
     request: EntityRequest;
     response: EntityResponse;
 }
 
 export class Entity {
     
-    request: EntityRequest;
-    response: EntityResponse;
+    readonly name?: string;
+    readonly request: EntityRequest;
+    readonly response: EntityResponse;
     
     constructor(props: Props) {
+        this.name = props.name;
         this.request = props.request;
         this.response = props.response;
     }
     
-    public static async from(req: RestRequest, res: Response): Promise<Entity> {
-        
-        const request = {
-            body: req.body,
-            headers: req.headers,
-        };
+    public static async from(request: RestRequest, res: Response): Promise<Entity> {
+        const name = request.name;
         
         const response = {
             body: await res.buffer(),
             headers: res.headers,
             statusText: res.statusText,
             status: res.status,
+            getBody() {
+                return bodyAsString(this.body);
+            }
         };
         
-        return new Entity({ request, response });
+        return new Entity({ name, request, response });
     }
 }

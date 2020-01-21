@@ -13,14 +13,16 @@ function mockEntity(): Entity {
                 'content-type': 'application/json',
             }),
             body: '{"one":{"two":3}}',
+            getBody() { return this.body + "" },
         },
         response: {
             headers: new Headers({
                 'content-type': 'text/xml',
             }),
-            body: '<one><two three="four"/></one>',
+            body: Buffer.from('<one><two three="four"/></one>'),
             statusText: "OK",
             status: 200,
+            getBody() { return this.body.toString("utf-8") },
         }
     }
 }

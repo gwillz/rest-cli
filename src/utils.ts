@@ -2,11 +2,12 @@
 import { DurationObject, DateTime } from 'luxon';
 import xmlFormat from 'xml-formatter';
 import fecha from 'fecha';
+import { Headers } from 'node-fetch';
 
 export type StringMap = Record<string, string>;
 
 
-export function bodyAsString(body: unknown, type?: string | null): string {
+export function bodyAsString(body: unknown): string {
     if (!body) return "";
     
     return Buffer.isBuffer(body)
@@ -14,19 +15,28 @@ export function bodyAsString(body: unknown, type?: string | null): string {
         : typeof body === "string"
         ?  body
         : "";
-    
-    if (content && type) {
-        if (type.startsWith("application/json")) {
-            return jsonFormat(content);
-        }
-        else if (type.startsWith("application/json")) {
-            return xmlFormat(content, { stripComments: false });
-        }
-    }
-    
-    return content || (body + "");
 }
 
+type EntityLike = {
+    headers: Headers;
+    getBody: () => string;
+}
+
+export function bodyFormat(entity: EntityLike): string {
+    const body = entity.getBody();
+    const type = entity.headers.get("content-type");
+    
+    if (!body || !type) return body;
+    
+    if (type.startsWith("application/json")) {
+        return jsonFormat(body);
+    }
+    else if (type.startsWith("text/xml")) {
+        return xmlFormat(body, { stripComments: false });
+    }
+    
+    return body;
+}
 
 export function jsonFormat(content: string) {
     const json = safeParseJson(content);

@@ -110,10 +110,10 @@ function printRequest(req: RestRequest, options: Options) {
     
     if (options.headers) {
         printHeaders(req.headers);
+        console.log("");
     }
     if (options.body) {
-        console.log("");
-        console.log(req.filePath ?? req.getBody());
+        console.log(req.filePath ?? bodyFormat(req));
         console.log("");
     }
 }
@@ -124,10 +124,10 @@ function printResponse(res: EntityResponse, options: Options) {
     }
     if (options.headers) {
         printHeaders(res.headers);
+        console.log("");
     }
     if (options.body) {
-        console.log("");
-        console.log(bodyAsString(res.body, res.headers.get("content-type")));
+        console.log(bodyFormat(res));
         console.log("");
     }
 }
