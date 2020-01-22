@@ -115,8 +115,11 @@ function printRequest(req: RestRequest, options: Options) {
         console.log("");
     }
     if (options.body) {
-        console.log(req.filePath ?? bodyFormat(req));
-        console.log("");
+        const body = req.filePath ?? bodyFormat(req);
+        if (body) {
+            console.log(body);
+            console.log("")
+        }
     }
 }
 
@@ -124,13 +127,16 @@ function printResponse(res: EntityResponse, options: Options) {
     if (options.slug) {
         console.log(chalk.yellow(`HTTP/1.1 ${res.status} ${res.statusText}`));
     }
-    if (options.headers) {
+    if (options.headers && res.headers) {
         printHeaders(res.headers);
         console.log("");
     }
     if (options.body) {
-        console.log(bodyFormat(res));
-        console.log("");
+        const body = bodyFormat(res);
+        if (body) {
+            console.log(body);
+            console.log("")
+        }
     }
 }
 
