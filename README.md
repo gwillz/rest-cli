@@ -13,34 +13,34 @@ npm install -g rest-cli
 
 # A single file, simple output.
 # Shows stats, request method, and URL.
-rest-cli myrequest.http
+restcli myrequest.http
 
 # A sequence of files.
-rest-cli requests/*.http
+restcli requests/*.http
 
 # All .http files in the current directory.
-rest-cli .
+restcli .
 
 # Modify retry count (default: 3).
-rest-cli --retry 5 myrequest.http
+restcli --retry 5 myrequest.http
 
 # A named request within a file.
-rest-cli --pick myname myrequest.http
+restcli --pick myname myrequest.http
 
 # Hide the stats (1: [2]).
-rest-cli --no-stats myrequest.http
+restcli --no-stats myrequest.http
 
 # Show the request.
-rest-cli --request slug|headers|body myrequest.http
+restcli --request slug|headers|body myrequest.http
 
 # Show the response.
-rest-cli --response slug|headers|body myrequest.http
+restcli --response slug|headers|body myrequest.http
 
 # Show everything.
-rest-cli --full myrequest.http
+restcli --full myrequest.http
 
 # Disable colour.
-rest-cli --no-color myrequest.http
+restcli --no-color myrequest.http
 ```
 
 
@@ -78,14 +78,14 @@ If you really need Node v8, you can hack a solution with the
 Something like:
 
 ```sh
-echo "#!/usr/bin/node --harmony_async_iterator" > rest-cli
-echo "require('rest-cli').main()" >> rest-cli
-chmod +x rest-cli
-./rest-cli
+echo "#!/usr/bin/node --harmony_async_iterator" > restcli
+echo "require('rest-cli').main()" >> restcli
+chmod +x restcli
+./restcli
 ```
 
 
-## HTTP Lanaguage
+## HTTP Language
 
 This follows the standard RFC 2616, with templating as defined by
 [vscode-restclient](https://github.com/Huachao/vscode-restclient#http-language).
@@ -141,6 +141,7 @@ GET {{baseUrl}}/comments/{{commentId}}/replies/{{getReplies.response.body.//repl
 
 
 ## TODO
+- variables should be recursively interpolated in when used instead of statically
 - shared variables, environment files
 - GraphQL support
 - multipart file loading support

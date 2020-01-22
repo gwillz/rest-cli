@@ -19,7 +19,7 @@
     "LICENSE.md"
   ],
   "bin": {
-    "rest-cli": "dist/src/main.js"
+    "restcli": "dist/src/main.js"
   },
   "repository": {
     "type": "git",
