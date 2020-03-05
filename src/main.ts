@@ -43,8 +43,8 @@ export async function main(argv = process.argv) {
     }
 
     // Runtime options.
-    const retryMax = +options.retry || 3;
-    const requestName = options.pick;
+    const retryMax = +options.retry || +options.r || 3;
+    const requestName = options.pick || options.p;
     const showStats = !options["no-stats"];
     const showColor = !options["no-color"];
 
@@ -52,8 +52,13 @@ export async function main(argv = process.argv) {
         chalk.level = 0;
     }
 
-    const showRequest = showOptions(!!options.full, options.request);
-    const showResponse = showOptions(!!options.full, options.response);
+    // Nuke it.
+    if (options.quiet) {
+        console.log = () => {};
+    }
+
+    const showRequest = showOptions('req', options);
+    const showResponse = showOptions('res', options);
 
     const parser = new RestParser();
 
@@ -140,12 +145,16 @@ export async function main(argv = process.argv) {
  * Print data about the request according to the cmd options.
  */
 function printRequest(req: RestRequest, options: Options) {
+    // Slug.
     console.log(chalk.white(req.getSlug()));
 
+    // Headers.
     if (options.headers) {
         printHeaders(req.headers);
         console.log("");
     }
+
+    // Body.
     if (options.body) {
         const body = req.filePath ?? bodyFormat(req);
         if (body) {
@@ -159,15 +168,17 @@ function printRequest(req: RestRequest, options: Options) {
  * Print data about the response according to the cmd options.
  */
 function printResponse(res: EntityResponse, options: Options) {
-    if (options.slug) {
-        console.log(chalk.yellow(`HTTP/1.1 ${res.status} ${res.statusText}`));
-    }
+    // Slug.
+    console.log(chalk.yellow(`HTTP/1.1 ${res.status} ${res.statusText}`));
+
+    // Headers.
     if (options.headers && res.headers) {
         printHeaders(res.headers);
         console.log("");
     }
+
+    // Make it pretty! If possible. Mostly just JSON and XML.
     if (options.body) {
-        // Make it pretty! If possible. Mostly just JSON and XML.
         const body = bodyFormat(res);
         if (body) {
             console.log(body);
@@ -181,12 +192,12 @@ function printResponse(res: EntityResponse, options: Options) {
  */
 function printHeaders(headers: Headers) {
     for (let [name, value] of headers) {
-        console.log(chalk`{green ${capitalise(name, '-')}:} {greenBright ${value}}`);
+        console.log(chalk`{green ${capitalise(name)}:} {greenBright ${value}}`);
     }
 }
 
 type Options = {
-    slug: boolean;
+    // slug: boolean;
     headers: boolean;
     body: boolean;
 }
@@ -195,11 +206,16 @@ type Options = {
  * What data should we show for a request or response?
  * If 'full' then it's just everything.
  */
-function showOptions(full: boolean, option: string): Options {
+function showOptions(prefix: 'res' | 'req', options: Record<string, string>): Options {
+    const isFull = !!options.full || !!options.f;
+
+    if (options.pick && prefix === 'res') {
+        return { headers: true, body: true };
+    }
+
     return {
-        slug: full || option == "slug" || option == "headers" || option == "body",
-        headers: full || option == "headers" || option == "body",
-        body: full || option == "body",
+        headers: isFull || !!options[prefix] || !!options[`${prefix}-head`],
+        body: isFull || !!options[prefix] || !!options[`${prefix}-body`],
     }
 }
 
@@ -235,16 +251,23 @@ function help() {
     console.log("");
     console.log("Usage:");
     console.log("  rest-cli {options} file1 file2 ...");
+    console.log("  rest-cli --helper <name> {args...}");
+    console.log("  rest-cli --help");
     console.log("");
-    console.log("options:");
-    console.log("  --retry <number> (default: 3)");
-    console.log("  --pick <name>");
-    console.log("  --body <request|response|both>");
-    console.log("  --headers <request|response|both>");
-    console.log("  --full");
-    console.log("  --no-stats");
+    console.log("Options:");
+    console.log("  --retry [-r] <number> (default: 3)");
+    console.log("  --pick [-p] <name>");
+    console.log("  --quiet [-q]");
     console.log("  --no-color");
-    console.log("  --helper <name> {args...}");
-    console.log("  --help");
+    console.log("  --no-stats");
+    console.log("");
+    console.log("Display options:");
+    console.log("  --full [-f]");
+    console.log("  --req");
+    console.log("  --req-head");
+    console.log("  --req-body");
+    console.log("  --res");
+    console.log("  --res-head");
+    console.log("  --res-body");
     console.log("");
 }
