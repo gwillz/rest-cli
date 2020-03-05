@@ -8,6 +8,7 @@ import { isServerError } from './ServerError';
 import { getArgs, retry, capitalise, bodyFormat, expandPaths } from './utils';
 import { EntityResponse } from './Entity';
 import FUNCTIONS, { isFunction } from './functions';
+import { highlight } from 'cli-highlight';
 
 /**
  * Execute main if this is the calling module.
@@ -53,6 +54,7 @@ export async function main(argv = process.argv) {
     const requestName = options.pick || options.p;
     const showStats = !options["no-stats"];
     const showColor = !options["no-color"];
+    const showHighlight = !options["no-highlight"] && showColor;
 
     if (!showColor) {
         chalk.level = 0;
@@ -98,12 +100,12 @@ export async function main(argv = process.argv) {
                 if (showStats) {
                     process.stdout.write(chalk.grey(`${requestName}: [${attempt}] `));
                 }
-                printRequest(req, showRequest);
+                printRequest(req, showRequest, showHighlight);
 
                 // Do it.
                 let { response } = await req.request();
 
-                printResponse(response, showResponse);
+                printResponse(response, showResponse, showHighlight);
             });
         }
 
@@ -120,7 +122,7 @@ export async function main(argv = process.argv) {
                         if (showStats) {
                             process.stdout.write(chalk.grey(`${file.getFileName()}:${index} [${attempt}] `));
                         }
-                        printRequest(req, showRequest);
+                        printRequest(req, showRequest, showHighlight);
 
                         // Do it.
                         const entity = await req.request();
@@ -130,7 +132,7 @@ export async function main(argv = process.argv) {
                             file.vars.addEntity(entity);
                         }
 
-                        printResponse(entity.response, showResponse);
+                        printResponse(entity.response, showResponse, showHighlight);
                     });
                 }
 
@@ -151,7 +153,7 @@ export async function main(argv = process.argv) {
 /**
  * Print data about the request according to the cmd options.
  */
-function printRequest(req: RestRequest, options: Options) {
+function printRequest(req: RestRequest, options: Options, inColor: boolean) {
     // Slug.
     console.log(chalk.white(req.getSlug()));
 
@@ -165,7 +167,12 @@ function printRequest(req: RestRequest, options: Options) {
     if (options.body) {
         const body = req.filePath ?? bodyFormat(req);
         if (body) {
-            console.log(body);
+            if (inColor) {
+                console.log(highlight(body, { ignoreIllegals: true }));
+            }
+            else {
+                console.log(body);
+            }
             console.log("")
         }
     }
@@ -174,7 +181,7 @@ function printRequest(req: RestRequest, options: Options) {
 /**
  * Print data about the response according to the cmd options.
  */
-function printResponse(res: EntityResponse, options: Options) {
+function printResponse(res: EntityResponse, options: Options, inColor: boolean) {
     // Slug.
     console.log(chalk.yellow(`HTTP/1.1 ${res.status} ${res.statusText}`));
 
@@ -188,7 +195,12 @@ function printResponse(res: EntityResponse, options: Options) {
     if (options.body) {
         const body = bodyFormat(res);
         if (body) {
-            console.log(body);
+            if (inColor) {
+                console.log(highlight(body, { ignoreIllegals: true }));
+            }
+            else {
+                console.log(body);
+            }
             console.log("")
         }
     }
@@ -267,6 +279,7 @@ function help() {
     console.log("  --pick  [-p] <name>");
     console.log("  --quiet [-q]");
     console.log("  --no-color");
+    console.log("  --no-highlight");
     console.log("  --no-stats");
     console.log("");
     console.log("Display options:");

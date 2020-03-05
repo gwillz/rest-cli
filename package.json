@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "chalk": "^3.0.0",
+    "cli-highlight": "^2.1.4",
     "dotenv": "^8.2.0",
     "fecha": "^4.0.0",
     "fs-extra": "^8.1.0",
