@@ -36,6 +36,9 @@ export function bodyFormat(entity: EntityLike): string {
     else if (type.startsWith("text/xml")) {
         return xmlFormat(body, { stripComments: false });
     }
+    else if (type.startsWith("application/xml")) {
+        return xmlFormat(body, { stripComments: false });
+    }
 
     return body;
 }
