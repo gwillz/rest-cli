@@ -21,7 +21,7 @@ export async function main(argv = process.argv) {
         "no-color",
         "help",
     ], argv);
-    
+
     if (options.help) {
         help();
         return;
@@ -31,71 +31,71 @@ export async function main(argv = process.argv) {
     const requestName = options.pick;
     const showStats = !options["no-stats"];
     const showColor = !options["no-color"];
-    
+
     if (!showColor) {
         chalk.level = 0;
     }
-    
+
     const showRequest = showOptions(!!options.full, options.request);
     const showResponse = showOptions(!!options.full, options.response);
-    
+
     const parser = new RestParser();
-    
+
     for await (let filePath of expandPaths(...args)) {
         await parser.readFile(filePath);
     }
-    
+
     if (parser.isEmpty()) {
         console.log(chalk`{red No files.}`);
         console.log("");
         help();
         return;
     }
-    
+
     try {
         if (requestName) {
             const req = await parser.get(requestName);
-            
+
             if (!req) {
                 console.log(chalk`{red Cannot find request:} {white ${requestName}}`);
                 return;
             }
-            
+
             await retry(retryMax, async attempt => {
                 if (showStats) {
                     process.stdout.write(chalk.grey(`${requestName}: [${attempt}] `));
                 }
                 printRequest(req, showRequest);
-                
+
                 let { response } = await req.request();
-                
+
                 printResponse(response, showResponse);
             });
         }
         else {
             for (let file of parser) {
                 let index = 0;
-                
+
                 for await (let req of file) {
                     index++;
-                    
+
                     await retry(retryMax, async attempt => {
                         if (showStats) {
                             process.stdout.write(chalk.grey(`${file.getFileName()}:${index} [${attempt}] `));
                         }
                         printRequest(req, showRequest);
-                        
+
                         const entity = await req.request();
-                        
+
                         // console.log(req.name, entity.name);
                         if (entity.name) {
                             file.vars.addEntity(entity);
                         }
-                        
+
                         printResponse(entity.response, showResponse);
                     });
                 }
-                
+
             }
         }
     }
@@ -109,7 +109,7 @@ export async function main(argv = process.argv) {
 
 function printRequest(req: RestRequest, options: Options) {
     console.log(chalk.white(req.getSlug()));
-    
+
     if (options.headers) {
         printHeaders(req.headers);
         console.log("");

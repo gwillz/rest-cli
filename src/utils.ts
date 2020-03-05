@@ -11,7 +11,7 @@ export type StringMap = Record<string, string>;
 
 export function bodyAsString(body: unknown): string {
     if (!body) return "";
-    
+
     return Buffer.isBuffer(body)
         ? body.toString("utf-8")
         : typeof body === "string"
@@ -27,23 +27,23 @@ type EntityLike = {
 export function bodyFormat(entity: EntityLike): string {
     const body = entity.getBody();
     const type = entity.headers.get("content-type");
-    
+
     if (!body || !type) return body;
-    
+
     if (type.startsWith("application/json")) {
         return jsonFormat(body);
     }
     else if (type.startsWith("text/xml")) {
         return xmlFormat(body, { stripComments: false });
     }
-    
+
     return body;
 }
 
 export function jsonFormat(content: string) {
     const json = safeParseJson(content);
     if (!json) return content;
-    
+
     return JSON.stringify(json, undefined, 4);
 }
 
@@ -66,19 +66,19 @@ type Args = {
 
 export function getArgs(flags: string[] = [], argv = process.argv): Args {
     const [node, script, ...rest] = argv;
-    
+
     const options: StringMap = {};
     const args: string[] = [];
-    
+
     let name: undefined | string;
-    
+
     for (let arg of rest) {
         const m = /^-+(.+)$/.exec(arg);
-        
+
         if (m) {
             name = m[1];
             options[name] = "true";
-            
+
             if (flags.includes(name)) {
                 name = undefined;
             }
@@ -91,7 +91,7 @@ export function getArgs(flags: string[] = [], argv = process.argv): Args {
             args.push(arg);
         }
     }
-    
+
     return { node, script, options, args };
 }
 
@@ -150,12 +150,12 @@ export function getDuration(offset: number, option: string): DurationObject | un
 export function getOffset(date: DateTime, offset?: string, option?: string) {
     if (offset && option) {
         const duration = getDuration(+offset, option);
-        
+
         if (duration) {
             date = date.plus(duration);
         }
     }
-    
+
     return date;
 }
 
@@ -188,10 +188,10 @@ export function basicAuth(username: string, password: string) {
 export async function* expandPaths(...patterns: string[]): AsyncGenerator<string> {
     for (let pattern of patterns) {
         if (!pattern) continue;
-        
+
         for (let pathname of await glob(pattern)) {
             const stats = await fs.lstat(pathname);
-            
+
             if (stats.isFile()) {
                 if (!pathname.match(/\.(http|rest)$/)) continue;
                 yield path.resolve(pathname);
@@ -199,7 +199,7 @@ export async function* expandPaths(...patterns: string[]): AsyncGenerator<string
             else if (stats.isDirectory()) {
                 for (let subPath of await fs.readdir(pathname)) {
                     if (!subPath.match(/\.(http|rest)$/)) continue;
-                    
+
                     yield path.resolve(pathname, subPath);
                 }
             }

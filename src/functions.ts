@@ -29,7 +29,7 @@ export function datetime(format?: string, offset?: string, option?: string) {
     if (offset != void 0 && option == void 0) {
         throw new Error("datetime missing [offset option].");
     }
-    
+
     return formatDate(getOffset(DateTime.utc(), offset, option), format);
 }
 
