@@ -59,7 +59,7 @@ export function dotenv(name?: string) {
 
 type GenericFn = (...args: string[]) => string;
 
-const fns: Record<string, GenericFn> = {
+const fns = {
     guid,
     randomInt,
     timestamp,
@@ -75,4 +75,4 @@ export function isFunction(test: any): test is FnName {
     return test in fns;
 }
 
-export default fns;
+export default fns as Record<FnName, GenericFn>;
