@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import realGlob from 'glob';
 import fecha from 'fecha';
-import xmlFormat from 'xml-formatter';
+import xmlBeautify from 'xml-beautifier';
 import { DurationObject, DateTime } from 'luxon';
 import { Headers } from 'node-fetch';
 
@@ -33,11 +33,9 @@ export function bodyFormat(entity: EntityLike): string {
     if (type.startsWith("application/json")) {
         return jsonFormat(body);
     }
-    else if (type.startsWith("text/xml")) {
-        return xmlFormat(body, { stripComments: false });
-    }
-    else if (type.startsWith("application/xml")) {
-        return xmlFormat(body, { stripComments: false });
+    else if (type.startsWith("text/xml") ||
+            type.startsWith("application/xml")) {
+        return xmlBeautify(body);
     }
 
     return body;

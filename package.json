@@ -6,7 +6,7 @@
   "typings": "dist/src/index.d.ts",
   "scripts": {
     "bin": "node dist/src/main.js",
-    "dev": "ts-node src/main.ts",
+    "dev": "ts-node --files src/main.ts",
     "test": "tape -r ts-node/register tests/*.test.ts | tap-spec",
     "serve": "ts-node tests/app.ts",
     "prepack": "tsc -b",
@@ -55,6 +55,7 @@
     "node-fetch": "^2.6.0",
     "source-map-support": "^0.5.16",
     "uuid": "^3.4.0",
+    "xml-beautifier": "^0.4.3",
     "xml-formatter": "^1.2.0",
     "xmldom": "^0.2.1",
     "xpath": "0.0.27"
