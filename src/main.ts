@@ -36,6 +36,12 @@ export async function main(argv = process.argv) {
         return;
     }
 
+    // Show version and quit.
+    if (options.version || options.v) {
+        version();
+        return;
+    }
+
     // Test helper and quit.
     if (options.helper) {
         testHelper(options.helper, args);
@@ -254,6 +260,7 @@ function help() {
     console.log("  rest-cli {options} file1 file2 ...");
     console.log("  rest-cli --helper <name> {args...}");
     console.log("  rest-cli --help");
+    console.log("  rest-cli --version");
     console.log("");
     console.log("Options:");
     console.log("  --retry [-r] <number> (default: 3)");
@@ -271,4 +278,16 @@ function help() {
     console.log("  --res-head");
     console.log("  --res-body");
     console.log("");
+}
+
+function version() {
+    const pkg = (() => {
+        try {
+            return require(__dirname + "/../../package.json");
+        }
+        catch (e) {
+            return require(__dirname + "/../package.json");
+        }
+    })();
+    console.log(`${pkg.name}: version ${pkg.version}`);
 }
