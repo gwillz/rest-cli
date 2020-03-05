@@ -7,6 +7,7 @@ import { RestRequest } from './RestRequest';
 import { isServerError } from './ServerError';
 import { getArgs, retry, capitalise, bodyFormat, expandPaths } from './utils';
 import { EntityResponse } from './Entity';
+import FUNCTIONS, { isFunction } from './functions';
 
 if (require.main === module) {
     require('source-map-support').install();
@@ -26,7 +27,12 @@ export async function main(argv = process.argv) {
         help();
         return;
     }
-    
+
+    if (options.helper) {
+        testHelper(options.helper, args);
+        return;
+    }
+
     const retryMax = +options.retry || 3;
     const requestName = options.pick;
     const showStats = !options["no-stats"];
@@ -160,6 +166,21 @@ function showOptions(full: boolean, option: string): Options {
     }
 }
 
+function testHelper(helper: string, args: string[]) {
+    if (isFunction(helper)) {
+        const fn = FUNCTIONS[helper];
+        console.log(fn.apply(null, args));
+    }
+    else {
+        console.log("rest-cli: Not a valid helper.");
+        console.log("");
+        for (let fn in FUNCTIONS) {
+            console.log("-", fn);
+        }
+        process.exit(1);
+    }
+}
+
 function help() {
     console.log("rest-cli: A HTTP/REST file sequencer.");
     console.log("");
@@ -174,6 +195,7 @@ function help() {
     console.log("  --full");
     console.log("  --no-stats");
     console.log("  --no-color");
+    console.log("  --helper <name> {args...}");
     console.log("  --help");
     console.log("");
 }
