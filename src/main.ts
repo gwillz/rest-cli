@@ -53,8 +53,9 @@ export async function main(argv = process.argv) {
     }
 
     // Nuke it.
-    if (options.quiet) {
+    if (options.quiet || options.q) {
         console.log = () => {};
+        process.stdout.write = () => true;
     }
 
     const showRequest = showOptions('req', options);
@@ -256,7 +257,7 @@ function help() {
     console.log("");
     console.log("Options:");
     console.log("  --retry [-r] <number> (default: 3)");
-    console.log("  --pick [-p] <name>");
+    console.log("  --pick  [-p] <name>");
     console.log("  --quiet [-q]");
     console.log("  --no-color");
     console.log("  --no-stats");
