@@ -166,16 +166,14 @@ export function formatDate(date: DateTime, format: string) {
         case "iso8601":
             return date.toISO();
     }
-    
-    // Yes, I know this allowed unmatched quotes like "etc'.
-    const m = /['"]([^"']+)["']/.exec(format);
-    if (!m) return format;
-    
+
+    format = format.replace(/^["']+|['"]+$/g, '');
+
     try {
-        return fecha.format(date.toJSDate(), m[1]);
+        return fecha.format(date.toJSDate(), format);
     }
     catch (error) {
-        return m[1];
+        return format;
     }
 }
 
