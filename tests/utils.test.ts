@@ -26,7 +26,7 @@ test("utils: bodyAsString", assert => {
         const expected = "a whole bunch of stuff";
         assert.equals(actual, expected);
     }
-    
+
     assert.end();
 });
 
@@ -45,7 +45,7 @@ test("utils: safeParseJson", assert => {
 });
 
 test("utils: getArgs", assert => {
-    
+
     const args = utils.getArgs(['six'], [
         "/usr/bin/node",
         "/home/utils.js",
@@ -59,28 +59,28 @@ test("utils: getArgs", assert => {
         "eight",
         "--nine",
     ]);
-    
+
     assert.equals(args.node, "/usr/bin/node");
     assert.equals(args.script, "/home/utils.js");
-    
+
     assert.deepEquals(args.options, {
        "one": "true",
        "two": "three",
        "six": "true",
        "nine": "true",
     });
-    
+
     assert.deepEquals(args.args, [
         "four", "five", "seven", "eight"
     ]);
-    
+
     assert.end();
 });
 
 test("utils: retry (immediate)", async assert => {
     assert.plan(1);
     let count = 0;
-    
+
     try {
         await utils.retry(5, attempt => {
             count = attempt;
@@ -89,7 +89,7 @@ test("utils: retry (immediate)", async assert => {
     catch (error) {
         assert.fail(error);
     }
-    
+
     assert.equals(count, 1);
     assert.end();
 });
@@ -97,7 +97,7 @@ test("utils: retry (immediate)", async assert => {
 test("utils: retry (good)", async assert => {
     assert.plan(1);
     let count = 0;
-    
+
     try {
         await utils.retry(5, attempt => {
             count = attempt;
@@ -107,7 +107,7 @@ test("utils: retry (good)", async assert => {
     catch (error) {
         assert.fail(error);
     }
-    
+
     assert.equals(count, 3);
     assert.end();
 });
@@ -115,17 +115,17 @@ test("utils: retry (good)", async assert => {
 test("utils: retry (bad)", async assert => {
     assert.plan(1);
     let count = 0;
-    
+
     try {
         await utils.retry(5, attempt => {
             count = attempt;
             throw new Error("mm");
         });
-        
+
         assert.fail();
     }
     catch (error) {}
-    
+
     assert.equals(count, 5);
     assert.end();
 });
@@ -134,7 +134,7 @@ test("utils: capitalise", assert => {
     
     const actual = utils.capitalise("this-is-LOWER.", "-");
     const expected = "This-Is-Lower.";
-    
+
     assert.equals(actual, expected);
     assert.end();
 });
@@ -185,13 +185,13 @@ test("utils: getDuration", assert => {
         const expected = { "years": 0 };
         assert.deepEquals(actual, expected);
     }
-    
+
     assert.end();
 });
 
 test("utils: getOffset", assert => {
     const date = DateTime.local();
-    
+
     {
         const actual = utils.getOffset(date);
         assert.equals(+actual, +date);
@@ -206,13 +206,13 @@ test("utils: getOffset", assert => {
         const expected = date.plus({ years: -2 });
         assert.equals(+actual, +expected);
     }
-    
+
     assert.end();
 });
 
 test("utils: formatDate", assert => {
     const date = DateTime.utc(2000, 3, 4, 5, 6, 7, 8);
-    
+
     {
         const actual = utils.formatDate(date, "rfc1123");
         const expected = "Sat, 04 Mar 2000 05:06:07 GMT";
@@ -233,7 +233,7 @@ test("utils: formatDate", assert => {
         const expected = "y";
         assert.equals(actual, expected);
     }
-    
+
     assert.end();
 });
 
@@ -245,7 +245,7 @@ test("utils: expandPaths directory", async assert => {
             r("test-3.rest"),
             r("test.http"),
         ];
-        
+
         actual.sort();
         assert.deepEquals(actual, expected);
     }
@@ -264,7 +264,7 @@ test("utils: expandPaths glob", async assert => {
             r("test-2.http"),
             r("test.http"),
         ];
-        
+
         actual.sort();
         assert.deepEquals(actual, expected);
     }
