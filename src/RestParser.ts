@@ -10,61 +10,61 @@ type Step = "init" | "request" | "body" | "file";
 
 
 export class RestParser {
-    
+
     files: RestFile[];
     count: number;
-    
+
     constructor() {
         this.files = [];
         this.count = 0;
     }
-    
+
     public async get(name: string | number): Promise<RestRequest | null> {
         for (let file of this.files) {
             const req = await file.get(name);
             if (req) return req;
         }
-        
+
         return null;
     }
-    
+
     public *[Symbol.iterator](): Generator<RestFile> {
         for (let file of this.files) {
             yield file;
         }
     }
-    
+
     public size() {
         return this.count;
     }
-    
+
     public isEmpty() {
         return this.size() == 0;
     }
-    
+
     public async readFile(filePath: string) {
         const contents = await fs.readFile(filePath, 'utf-8');
         this.readString(filePath, contents);
     }
-    
+
     public readString(filePath: string, contents: string) {
-        
+
         const vars = new VarMap();
         const names: string[] = [];
         const requests: RestRequest[] = [];
-        
+
         for (let part of contents.split(/###+.*\n/)) {
             let step: Step = "init";
-            
+
             const headers: StringMap = {};
             let request: RequestToken | undefined = undefined;
             let body = "";
             let filePath = "";
             let name = "";
-            
+
             for (let line of part.split(/[\n\r]+/)) {
                 let token = findToken(line);
-                
+
                 // variables
                 if (token && token.type == "variable" && step == "init") {
                     vars.addVar(token.name, token.value);
@@ -102,10 +102,10 @@ export class RestParser {
                     throw new Error("out of order parsing.");
                 }
             }
-            
+
             // no request
             if (!request) continue;
-            
+
             if (name) {
                 if (names.includes(name)) {
                     throw new Error("duplicate name: " + name);
@@ -114,7 +114,7 @@ export class RestParser {
                     names.push(name);
                 }
             }
-            
+
             requests.push(new RestRequest({
                 method: request.method,
                 url: request.url,
@@ -123,10 +123,10 @@ export class RestParser {
                 body: body || undefined,
                 filePath: filePath || undefined,
             }));
-            
+
             this.count++;
         }
-        
+
         this.files.push(new RestFile({
             filePath,
             requests,
