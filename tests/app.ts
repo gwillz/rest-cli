@@ -3,8 +3,8 @@ import express from 'express';
 
 const PORT = process.env.PORT || 3000;
 
-function main() {
-    express()
+export function main() {
+    return express()
     
     .post("/api/users/new", (req, res) => {
         res.send({ user_id: 123 });
@@ -14,6 +14,13 @@ function main() {
         res.send({
             name: "AJ",
             user_id: req.params.user_id,
+         });
+    })
+    
+    .get("/api/search", (req, res) => {
+        res.send({
+            keyword: req.query.keyword,
+            filter: req.query.filter,
          });
     })
     
