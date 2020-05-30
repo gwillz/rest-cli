@@ -24,3 +24,10 @@ Content-Type: application/json
 GET {{api}}/users/{{user_id}}
 Authorization: Basic andrew {{password}}
 Content-Type: application/json
+
+###
+
+GET {{api}}/search
+    ?keyword=andrew
+    &filter=birthday
+Authorization: Basic andrew {{password}}
