@@ -38,7 +38,7 @@ const TOKENS: TokenRule[] = [
     { type: "name", regex: /^(?:#+|\/\/+)\s*@name\s+(.+)$/ },
     { type: "comment", regex: /^\s*##?.*$/ },
     { type: "request_param", regex: /^\s*([&?].+)$/ },
-    { type: "request", regex: /^(GET|PUT|PATCH|POST|DELETE|HEAD|OPTIONS)?\s*([^\s]+)\s*(HTTP\/\d\.\d)?$/ },
+    { type: "request", regex: /^(GET|PUT|PATCH|POST|DELETE|HEAD|OPTIONS)?\s*([^\s]+)\s*(HTTP\/[\d\.]+)?$/ },
     { type: "header", regex: /^([\w_-]+)\s*:\s*(.+)$/ },
     { type: "file", regex: /^<\s+(.+)$/ },
 ];
