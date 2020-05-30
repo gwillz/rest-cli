@@ -39,7 +39,7 @@ export async function main(argv = process.argv) {
 
     // Show version and quit.
     if (options.version || options.v) {
-        version();
+        await version();
         return;
     }
 
@@ -293,14 +293,10 @@ function help() {
     console.log("");
 }
 
-function version() {
-    const pkg = (() => {
-        try {
-            return require(__dirname + "/../../package.json");
-        }
-        catch (e) {
-            return require(__dirname + "/../package.json");
-        }
-    })();
-    console.log(`${pkg.name}: version ${pkg.version}`);
+async function version() {
+    return import(__dirname + "/../../package.json")
+    .catch(_ => import(__dirname + "/../package.json"))
+    .then(pkg => {
+        console.log(`${pkg.name}: version ${pkg.version}`);
+    });
 }
