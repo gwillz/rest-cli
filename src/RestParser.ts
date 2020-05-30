@@ -94,7 +94,9 @@ export class RestParser {
                 }
                 // body
                 else if (step == "body" || step == "request") {
-                    body += line + "\n";
+                    if (body || line) {
+                        body += line + "\n";
+                    }
                 }
                 // error
                 else if (token) {
