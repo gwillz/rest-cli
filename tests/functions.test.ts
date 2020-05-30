@@ -34,20 +34,22 @@ test("functions: randomInt", assert => {
 });
 
 test("functions: timestamp", assert => {
+    const resolution = 1000;
     const now = FUNCTIONS.timestamp();
     
-    const actual = (+now / 100).toFixed(0);
-    const expected = (+new Date() / 100).toFixed();
+    const actual = (+now / resolution).toFixed(0);
+    const expected = (+new Date() / resolution).toFixed(0);
     
     assert.equals(actual, expected);
     assert.end();
 });
 
 test("functions: timestamp offset", assert => {
+    const resolution = 1000;
     const now = FUNCTIONS.timestamp("1", "h");
     
-    const actual = (+now / 100).toFixed(0);
-    const expected = (+new Date() / 100).toFixed();
+    const actual = (+now / resolution).toFixed(0);
+    const expected = (+new Date() / resolution).toFixed(0);
     
     // @todo Not great.
     assert.notEquals(actual, expected);
