@@ -6,7 +6,7 @@
   "typings": "dist/src/index.d.ts",
   "scripts": {
     "bin": "node dist/src/main.js",
-    "dev": "ts-node --files src/main.ts",
+    "dev": "ts-node src/main.ts",
     "test": "tape -r ts-node/register tests/*.test.ts | tap-spec",
     "serve": "ts-node tests/app.ts",
     "prepack": "tsc -b",

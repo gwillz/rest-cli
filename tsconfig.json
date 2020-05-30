@@ -32,5 +32,8 @@
 
     /* Advanced Options */
     "forceConsistentCasingInFileNames": true
+  },
+  "ts-node": {
+    "files": true
   }
 }
