@@ -2,13 +2,15 @@
 
 import chalk from 'chalk';
 import { Headers } from 'node-fetch';
-import { RestParser } from './RestParser';
+import { RestParser, RestParserOptions } from './RestParser';
 import { RestRequest } from './RestRequest';
 import { isServerError } from './ServerError';
-import { getArgs, retry, capitalise, bodyFormat, expandPaths } from './utils';
+import { getArgs, retry, capitalise, bodyFormat, expandPaths, StringMap } from './utils';
 import { EntityResponse } from './Entity';
 import FUNCTIONS, { isFunction } from './functions';
 import { highlight } from 'cli-highlight';
+import { readFile } from 'fs';
+import { promisify } from 'util';
 
 /**
  * Execute main if this is the calling module.
@@ -56,6 +58,11 @@ export async function main(argv = process.argv) {
     const showColor = !options["no-color"];
     const showHighlight = !options["no-highlight"] && showColor;
 
+    let parserOptions: RestParserOptions = {};
+
+    // Load global/environment variables from file
+    await loadJsonFileVariables(parserOptions, options);
+
     if (!showColor) {
         chalk.level = 0;
     }
@@ -69,7 +76,7 @@ export async function main(argv = process.argv) {
     const showRequest = showOptions('req', options);
     const showResponse = showOptions('res', options);
 
-    const parser = new RestParser();
+    const parser = new RestParser(parserOptions);
 
     // Load all the files into the parser.
     for await (let filePath of expandPaths(...args)) {
@@ -147,6 +154,23 @@ export async function main(argv = process.argv) {
         if (isServerError(error)) {
             console.log(chalk.red(await error.response.text()));
         }
+    }
+}
+
+/**
+ * Load global/environment variables from JSON file
+ */
+async function loadJsonFileVariables(parserOptions: RestParserOptions, options: StringMap) {
+    let variables = null;
+    try {
+        const readFileAsync = promisify(readFile);
+        variables = JSON.parse((await readFileAsync(options.vars)).toString());
+        parserOptions.globalVars = new Map<string,string>();
+        for (let key of Object.keys(variables)) {
+            parserOptions.globalVars.set(key, variables[key]);
+        }
+    } catch (e) {
+        console.log(chalk`{red Failed to load ${options.vars}}, ignoring variables file (${e})`);
     }
 }
 
@@ -278,6 +302,7 @@ function help() {
     console.log("  --retry [-r] <number> (default: 3)");
     console.log("  --pick  [-p] <name>");
     console.log("  --quiet [-q]");
+    console.log("  --vars <file>");
     console.log("  --no-color");
     console.log("  --no-highlight");
     console.log("  --no-stats");

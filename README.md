@@ -41,6 +41,9 @@ restcli --full myrequest.http
 
 # Disable colour.
 restcli --no-color myrequest.http
+
+# Use global variables from JSON file, f.x. {"endpoint": "https://example.com"}
+restcli --vars path/to/env-vars.json myrequest.http
 ```
 
 
@@ -58,10 +61,10 @@ import { RestParser } from 'rest-cli';
 (async () => {
     const parser = new RestParser();
     await parser.readFile("./myrequest.http");
-    
+
     const request = await parser.get(0);
     console.log(request.toString());
-    
+
     const { response } = await request.request();
     console.log(response.getBody());
 })();

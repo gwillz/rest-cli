@@ -8,15 +8,26 @@ import { StringMap } from './utils';
 
 type Step = "init" | "request" | "body" | "file";
 
+export interface RestParserOptions {
+    globalVars?: Map<string,string>;
+}
 
 export class RestParser {
 
     files: RestFile[];
     count: number;
+    globalVars: Map<string,string>|null;
 
-    constructor() {
+    constructor(options?: RestParserOptions) {
         this.files = [];
         this.count = 0;
+
+        // Optional global (environment) variables
+        if (typeof(options) !== 'undefined' && typeof(options.globalVars) !== 'undefined') {
+            this.globalVars = options.globalVars;
+        } else {
+            this.globalVars = null;
+        }
     }
 
     public async get(name: string | number): Promise<RestRequest | null> {
@@ -52,6 +63,13 @@ export class RestParser {
         const vars = new VarMap();
         const names: string[] = [];
         const requests: RestRequest[] = [];
+
+        // Assign global variables as they would be in the file header
+        if (this.globalVars !== null) {
+            this.globalVars.forEach((value, key) => {
+                vars.addVar(key, value);
+            });
+        }
 
         for (let part of contents.split(/###+.*\n/)) {
             let step: Step = "init";
