@@ -147,6 +147,8 @@ export async function main(argv = process.argv) {
         if (isServerError(error)) {
             console.log(chalk.red(await error.response.text()));
         }
+
+        process.exitCode = 1;
     }
 }
 
