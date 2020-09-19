@@ -49,7 +49,6 @@
     "cli-highlight": "^2.1.4",
     "dotenv": "^8.2.0",
     "fecha": "^4.0.0",
-    "fs-extra": "^8.1.0",
     "glob": "^7.1.6",
     "jsonpath-plus": "^2.0.0",
     "luxon": "^1.21.3",
