@@ -1,6 +1,6 @@
 
 import path from 'path';
-import fs from 'fs-extra';
+import fs from './fs';
 import realGlob from 'glob';
 import fecha from 'fecha';
 import xmlBeautify from 'xml-beautifier';

@@ -1,6 +1,6 @@
 
 import path from 'path';
-import fs from 'fs-extra';
+import fs from './fs';
 import fetch, { Headers } from 'node-fetch';
 import { Method } from "./Token";
 import { VarMap } from './VarMap';

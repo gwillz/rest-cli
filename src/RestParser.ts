@@ -1,5 +1,5 @@
 
-import fs from 'fs-extra';
+import fs from './fs';
 import { RestRequest } from './RestRequest';
 import { findToken, RequestToken } from './Token';
 import { VarMap } from './VarMap';
