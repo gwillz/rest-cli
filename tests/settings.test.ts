@@ -8,7 +8,7 @@ import { Settings } from '../src/Settings';
 const r = path.resolve.bind(null, __dirname);
 const TEST_FILE = r("settings.json");
 
-test("Settings: loadFile", a(async assert => {
+test("Settings: loadEnv", a(async assert => {
     const settings = new Settings();
     
     // It's empty.
@@ -26,7 +26,7 @@ test("Settings: loadFile", a(async assert => {
     
     env = settings.getEnvironment('$shared');
     assert.equals(env.id, 'custom');
-    assert.equals(env.host, 'http://localhost:8080');
+    assert.equals(env.host, 'http://localhost:3000');
     assert.equals(env.api, '/api/v0');
     assert.equals(env.password, '1234567890');
     
@@ -55,13 +55,13 @@ test("Settings: loadVsCode", a(async assert => {
     
     env = settings.getEnvironment('$shared');
     assert.equals(env.id, 'vscode'); 
-    assert.equals(env.host, 'http://localhost:8080');
+    assert.equals(env.host, 'http://localhost:3000');
     assert.equals(env.api, '/api/v0');
     assert.equals(env.password, undefined);
     
     env = settings.getEnvironment('local');
     assert.equals(env.id, 'vscode');
-    assert.equals(env.host, 'http://localhost:8080');
+    assert.equals(env.host, 'http://localhost:3000');
     assert.equals(env.api, '/api/v0');
     assert.equals(env.password, '1234567890');
     
