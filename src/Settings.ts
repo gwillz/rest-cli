@@ -61,10 +61,18 @@ export class Settings {
     
     
     public getEnvironment(name: string): StringMap {
-        return {
+        const map = {
             ...this.environments['$shared'],
             ...this.environments[name],
         }
+        
+        for (let [key, value] of Object.entries(map)) {
+            const env = process.env[value];
+            if (!env) continue;
+            map[key] = env;
+        }
+        
+        return map;
     }
     
     
