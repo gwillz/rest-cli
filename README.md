@@ -187,13 +187,13 @@ missing to make it more compatible with the plugin.
 Feel free to jump in on any of these.
 
 - variables should be recursively interpolated when used - instead of statically
-- support for `//` comments
 - GraphQL support
 - multipart file loading support
 - cookies??
 - save to folder
 - more doc comments
 - better readme docs
+- interpolating `{{$shared name}}` in environment files
 
 Output options:
 - Simpler options, match the rest-client ones:
@@ -213,7 +213,6 @@ Per-request settings:
   - preview option
   - remember cookies
   - timeout
-  - confirm request `# @note`
 
 Tests:
   - functions
