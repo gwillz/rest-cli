@@ -3,6 +3,7 @@ import test from 'tape';
 import path from 'path';
 import * as utils from '../src/utils';
 import { DateTime } from 'luxon';
+import { a, toArray } from './test';
 
 const r = path.resolve.bind(null, __dirname);
 
@@ -77,58 +78,47 @@ test("utils: getArgs", assert => {
     assert.end();
 });
 
-test("utils: retry (immediate)", async assert => {
+test("utils: retry (immediate)", a(async assert => {
     assert.plan(1);
     let count = 0;
 
-    try {
+    await assert.aDoesNotThrow(async () => {
         await utils.retry(5, attempt => {
             count = attempt;
         });
-    }
-    catch (error) {
-        assert.fail(error);
-    }
+    });
 
     assert.equals(count, 1);
     assert.end();
-});
+}));
 
-test("utils: retry (good)", async assert => {
-    assert.plan(1);
+test("utils: retry (good)", a(async assert => {
     let count = 0;
 
-    try {
+    await assert.aDoesNotThrow(async () => {
         await utils.retry(5, attempt => {
             count = attempt;
             if (attempt < 3) throw new Error("mm");
         });
-    }
-    catch (error) {
-        assert.fail(error);
-    }
+    });
 
     assert.equals(count, 3);
     assert.end();
-});
+}));
 
-test("utils: retry (bad)", async assert => {
-    assert.plan(1);
+test("utils: retry (bad)", a(async assert => {
     let count = 0;
-
-    try {
+    
+    await assert.aThrows(async () => {
         await utils.retry(5, attempt => {
             count = attempt;
             throw new Error("mm");
         });
-
-        assert.fail();
-    }
-    catch (error) {}
+    });
 
     assert.equals(count, 5);
     assert.end();
-});
+}));
 
 test("utils: capitalise", assert => {
 
@@ -237,50 +227,27 @@ test("utils: formatDate", assert => {
     assert.end();
 });
 
-test("utils: expandPaths directory", async assert => {
-    try {
-        const actual = await toArray(utils.expandPaths("tests/"));
-        const expected = [
-            r("test-2.http"),
-            r("test-3.rest"),
-            r("test.http"),
-        ];
+test("utils: expandPaths directory", a(async assert => {
+    const actual = await toArray(utils.expandPaths("tests/"));
+    const expected = [
+        r("test-2.http"),
+        r("test-3.rest"),
+        r("test.http"),
+    ];
 
-        actual.sort();
-        assert.deepEquals(actual, expected);
-    }
-    catch (error) {
-        assert.fail(error);
-    }
-    finally {
-        assert.end();
-    }
-});
+    actual.sort();
+    assert.deepEquals(actual, expected);
+    assert.end();
+}));
 
-test("utils: expandPaths glob", async assert => {
-    try {
-        const actual = await toArray(utils.expandPaths("tests/*.http"));
-        const expected = [
-            r("test-2.http"),
-            r("test.http"),
-        ];
+test("utils: expandPaths glob", a(async assert => {
+    const actual = await toArray(utils.expandPaths("tests/*.http"));
+    const expected = [
+        r("test-2.http"),
+        r("test.http"),
+    ];
 
-        actual.sort();
-        assert.deepEquals(actual, expected);
-    }
-    catch (error) {
-        assert.fail(error);
-    }
-    finally {
-        assert.end();
-    }
-});
-
-// @todo Move to utils?
-async function toArray<T>(generator: AsyncGenerator<T>): Promise<T[]> {
-    const list: T[] = [];
-    for await (let item of generator) {
-        list.push(item);
-    }
-    return list;
-}
+    actual.sort();
+    assert.deepEquals(actual, expected);
+    assert.end();
+}));

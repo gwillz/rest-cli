@@ -1,6 +1,7 @@
 
 import test from 'tape';
 import path from 'path';
+import { a } from './test';
 
 import { Settings } from '../src/Settings';
 
@@ -107,15 +108,3 @@ test("Settings: loadPackage", a(async assert => {
     
     assert.end();
 }));
-
-
-function a(cb: (test: test.Test) => Promise<void>): (test: test.Test) => Promise<void> {
-    return async (test) => {
-        try {
-            await cb(test);
-        }
-        catch (error) {
-            test.end(error);
-        }
-    }
-}
