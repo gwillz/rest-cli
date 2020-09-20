@@ -8,6 +8,7 @@
     "bin": "node dist/src/main.js",
     "dev": "ts-node src/main.ts",
     "test": "tape -r ts-node/register tests/*.test.ts | tap-spec",
+    "test-one": "tape -r ts-node/register",
     "serve": "ts-node tests/app.ts",
     "prepack": "tsc -b",
     "build": "tsc -b",
