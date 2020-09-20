@@ -3,13 +3,13 @@
         "$shared": {
             "host": "http://localhost:8080",
             "api": "/api/v0",
-            "id": "custom"
+            "id": "vscode"
         },
         "local": {
             "password": "1234567890"
         },
         "production": {
-            "host": "https://example.com",
+            "host": "http://example.com",
             "password": "REDACTED"
         }
     }

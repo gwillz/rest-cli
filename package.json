@@ -62,5 +62,16 @@
   },
   "engines": {
     "node": "^10"
+  },
+  "rest-client.environmentVariables": {
+    "$shared": {
+      "id": "package"
+    },
+    "local": {
+      "password": "1234567890"
+    },
+    "production": {
+      "password": "REDACTED"
+    }
   }
 }
