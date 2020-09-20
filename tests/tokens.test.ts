@@ -30,11 +30,16 @@ test("Tokens: name", assert => {
 
 
 test("Tokens: comment", assert => {
-    
-    const actual = findToken("# whatever");
-    const expected = null;
-    
-    assert.equals(actual, expected);
+    {
+        const actual = findToken("# whatever");
+        const expected = null;
+        assert.equals(actual, expected);
+    }
+    {
+        const actual = findToken("// whatever");
+        const expected = null;
+        assert.equals(actual, expected);
+    }
     assert.end();
 });
 
