@@ -16,11 +16,11 @@ test("Settings: loadFile", a(async assert => {
         '$shared': {}
     });
     
-    await settings.loadFile(TEST_FILE);
+    await settings.loadEnv(TEST_FILE);
     
     assert.true(!!settings.environments['$shared']);
-    assert.true(!!settings.environments['local']);
-    assert.true(!!settings.environments['production']);
+    assert.false(!!settings.environments['local']);
+    assert.false(!!settings.environments['production']);
     
     let env: Record<string, string>;
     
@@ -28,19 +28,10 @@ test("Settings: loadFile", a(async assert => {
     assert.equals(env.id, 'custom');
     assert.equals(env.host, 'http://localhost:8080');
     assert.equals(env.api, '/api/v0');
-    assert.equals(env.password, undefined);
-    
-    env = settings.getEnvironment('local');
-    assert.equals(env.id, 'custom');
-    assert.equals(env.host, 'http://localhost:8080');
-    assert.equals(env.api, '/api/v0');
     assert.equals(env.password, '1234567890');
     
-    env = settings.getEnvironment('production');
+    env = settings.getEnvironment('whatever');
     assert.equals(env.id, 'custom');
-    assert.equals(env.host, 'https://example.com');
-    assert.equals(env.api, '/api/v0');
-    assert.equals(env.password, 'REDACTED');
     
     assert.end();
 }));
@@ -64,14 +55,20 @@ test("Settings: loadVsCode", a(async assert => {
     
     env = settings.getEnvironment('$shared');
     assert.equals(env.id, 'vscode'); 
+    assert.equals(env.host, 'http://localhost:8080');
+    assert.equals(env.api, '/api/v0');
     assert.equals(env.password, undefined);
     
     env = settings.getEnvironment('local');
-    assert.equals(env.id, 'vscode'); 
+    assert.equals(env.id, 'vscode');
+    assert.equals(env.host, 'http://localhost:8080');
+    assert.equals(env.api, '/api/v0');
     assert.equals(env.password, '1234567890');
     
     env = settings.getEnvironment('production');
     assert.equals(env.id, 'vscode'); 
+    assert.equals(env.host, 'https://example.com');
+    assert.equals(env.api, '/api/v0');
     assert.equals(env.password, 'REDACTED');
     
     assert.end();
