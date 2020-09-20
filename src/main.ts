@@ -127,12 +127,14 @@ export async function main(argv = process.argv, cwd = process.cwd()) {
                 if (showStats) {
                     process.stdout.write(chalk.grey(`${requestName}: [${attempt}] `));
                 }
+                
                 printRequest(req, showRequest, showHighlight);
 
                 // Do it.
-                let { response } = await req.request();
-
-                printResponse(response, showResponse, showHighlight);
+                let entity = await req.request();
+                if (entity === false) return;
+                
+                printResponse(entity.response, showResponse, showHighlight);
             });
         }
 
@@ -153,6 +155,7 @@ export async function main(argv = process.argv, cwd = process.cwd()) {
 
                         // Do it.
                         const entity = await req.request();
+                        if (entity === false) return;
 
                         // console.log(req.name, entity.name);
                         if (entity.name) {

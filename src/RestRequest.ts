@@ -2,12 +2,12 @@
 import path from 'path';
 import fs from './fs';
 import fetch, { Headers } from 'node-fetch';
+import { prompt } from 'enquirer';
 import { Method } from "./Token";
 import { VarMap } from './VarMap';
 import { bodyAsString, StringMap } from './utils';
 import { ServerError } from './ServerError';
 import { Entity } from './Entity';
-
 
 interface Props {
     method: Method;
@@ -70,8 +70,19 @@ export class RestRequest {
         });
     }
     
-    public async request(): Promise<Entity> {
+    public async request(): Promise<Entity | false> {
         const { method, headers, url, body } = this;
+        
+        if (this.settings.note !== undefined) {
+            const ok = await prompt({
+                type: 'confirm',
+                name: 'ok',
+                message: 'Continue?',
+            });
+            
+            // @ts-expect-error
+            if (!ok.ok) return false;
+        }
         
         const res = await fetch(url, {
             body,
