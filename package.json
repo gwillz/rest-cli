@@ -52,7 +52,7 @@
     "glob": "^7.1.6",
     "jsonpath-plus": "^2.0.0",
     "luxon": "^1.21.3",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "source-map-support": "^0.5.16",
     "uuid": "^3.4.0",
     "xml-beautifier": "^0.4.3",
