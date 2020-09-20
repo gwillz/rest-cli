@@ -172,8 +172,7 @@ Below are defaults.
 
 
 ## TODO
-- variables should be recursively interpolated in when used instead of statically
-- shared variables, environment files
+- variables should be recursively interpolated when used - instead of statically
 - GraphQL support
 - multipart file loading support
 - cookies??
@@ -183,15 +182,16 @@ Below are defaults.
   - restfile
   - utils (basicAuth, bodyAsString, ServerError)
   - parser (out-of-order, iterator, get)
-- cli options for:
+- cli setting override options for:
   - timeout
-  - environment file
   - config file
-- config file:
+- finish settings:
+  - certificates
+  - escaped unicode
+  - default headers
+  - follow redirects
+  - form param encoding
+  - proxy exclude hosts
+  - remember cookies
   - timeout
-  - followRedirects
-  - defaultHeaders?
-  - proxy?
-  - show/hide stats
-  - show/hide request [slug, headers, body]
-  - show/hide response [slug, headers, body]
+  
