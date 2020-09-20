@@ -80,13 +80,28 @@ export class Settings {
         }
     }
     
+    public async loadEnv(pathname: string) {
+        try {
+            const json = JSON.parse(await fs.readFile(pathname, 'utf-8'));
+            
+            // @ts-expect-error
+            this.environments = {
+                '$shared': json,
+            }
+            return true;
+        }
+        catch (error) {}
+        return false;
+    }
     
     public async loadVsCode(dirname: string) {
         try {
             const pathname = await Settings.findFile(dirname, 'settings.json', '.vscode');
             await this.loadFile(pathname);
+            return true;
         }
         catch (error) {}
+        return false;
     }
     
     
@@ -94,8 +109,10 @@ export class Settings {
         try {
             const pathname = await Settings.findFile(dirname, 'package.json');
             await this.loadFile(pathname);
+            return true;
         }
         catch (error) {}
+        return false;
     }
     
     
