@@ -50,6 +50,7 @@ export async function main(argv = process.argv) {
     }
 
     // Runtime options.
+    // @ts-expect-error
     const retryMax = +options.retry || +options.r || 3;
     const requestName = options.pick || options.p;
     const showStats = !options["no-stats"];
@@ -227,7 +228,7 @@ type Options = {
  * What data should we show for a request or response?
  * If 'full' then it's just everything.
  */
-function showOptions(prefix: 'res' | 'req', options: Record<string, string>): Options {
+function showOptions(prefix: 'res' | 'req', options: Record<string, string | undefined>): Options {
     const isFull = !!options.full || !!options.f;
 
     if (options.pick && prefix === 'res') {
