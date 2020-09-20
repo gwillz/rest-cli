@@ -113,7 +113,7 @@ export async function retry(attempts: number, cb: (attempt: number) => void | Pr
     }
 }
 
-export function capitalise(input: string) {
+export function capitalize(input: string) {
     return input.toLowerCase().replace(/\b\w/g, m => m.toUpperCase());
 }
 

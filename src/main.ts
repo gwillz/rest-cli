@@ -5,7 +5,7 @@ import { Headers } from 'node-fetch';
 import { RestParser } from './RestParser';
 import { RestRequest } from './RestRequest';
 import { isServerError } from './ServerError';
-import { getArgs, retry, capitalise, bodyFormat, expandPaths } from './utils';
+import { getArgs, retry, capitalize, bodyFormat, expandPaths } from './utils';
 import { EntityResponse } from './Entity';
 import FUNCTIONS, { isFunction } from './functions';
 import { highlight } from 'cli-highlight';
@@ -240,7 +240,7 @@ function printResponse(res: EntityResponse, options: Options, inColor: boolean) 
  */
 function printHeaders(headers: Headers) {
     for (let [name, value] of headers) {
-        console.log(chalk`{green ${capitalise(name)}:} {greenBright ${value}}`);
+        console.log(chalk`{green ${capitalize(name)}:} {greenBright ${value}}`);
     }
 }
 
