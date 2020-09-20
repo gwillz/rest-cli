@@ -2,5 +2,6 @@
     "host": "http://localhost:3000",
     "api": "/api/v0",
     "id": "custom",
-    "password": "1234567890"
+    "password": "1234567890",
+    "home": "HOME"
 }
