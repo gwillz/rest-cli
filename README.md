@@ -180,25 +180,60 @@ Below are defaults.
 
 
 ## TODO
+
+There's a lot to do to complete this tool. Most of these are things that are 
+missing to make it more compatible with the plugin.
+
+Feel free to jump in on any of these.
+
 - variables should be recursively interpolated when used - instead of statically
+- support for `//` comments
 - GraphQL support
 - multipart file loading support
 - cookies??
-- tests for:
+- save to folder
+- more doc comments
+- better readme docs
+
+Output options:
+- Simpler options, match the rest-client ones:
+  - full: response status, header, body
+  - header: response status, headers
+  - body: response body
+  - exchange: request slug + header + body, response status + header + body
+
+I think for full/header/body the request slug should still be present. But instead
+it should be piped into the stdout. One is then able to bash pipe the response data
+wherever they please without the noise.
+
+Per-request settings:
+  - escaped unicode
+  - follow redirects
+  - form param encoding
+  - preview option
+  - remember cookies
+  - timeout
+  - confirm request `# @note`
+
+Tests:
   - functions
   - request (fill, slug, body)
   - restfile
   - utils (basicAuth, bodyAsString, ServerError)
   - parser (out-of-order, iterator, get)
-- cli setting override options for:
+
+CLI options:
   - timeout
+  - preview option
   - config file
-- finish settings:
+
+Settings:
   - certificates
   - escaped unicode
   - default headers
   - follow redirects
   - form param encoding
+  - preview option 
   - proxy exclude hosts
   - remember cookies
   - timeout
