@@ -1,11 +1,14 @@
 
 import path from 'path';
+import util from 'util';
 import fs from './fs';
 import realGlob from 'glob';
 import fecha from 'fecha';
 import xmlBeautify from 'xml-beautifier';
 import { DurationObject, DateTime } from 'luxon';
 import { Headers } from 'node-fetch';
+
+const glob = util.promisify(realGlob);
 
 export type StringMap = Record<string, string>;
 
@@ -199,11 +202,3 @@ export async function* expandPaths(...patterns: string[]): AsyncGenerator<string
     }
 }
 
-export async function glob(pattern: string): Promise<string[]> {
-    return new Promise((resolve, reject) => {
-        realGlob(pattern, (error, matches) => {
-            if (error) reject(error);
-            else resolve(matches);
-        })
-    });
-}
