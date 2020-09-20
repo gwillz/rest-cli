@@ -8,6 +8,8 @@ import { Headers } from 'node-fetch';
 
 function mockEntity(): Entity {
     return {
+        settings: {},
+        name: undefined,
         request: {
             headers: new Headers({
                 'content-type': 'application/json',

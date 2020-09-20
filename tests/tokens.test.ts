@@ -16,15 +16,26 @@ test("Tokens: variable", assert => {
 });
 
 
-test("Tokens: name", assert => {
+test("Tokens: settings", assert => {
     
-    const actual = findToken("# @name henry");
-    const expected = {
-        type: "name",
-        name: "henry",
-    };
-    
-    assert.deepEquals(actual, expected);
+    {
+        const actual = findToken("# @name henry");
+        const expected = {
+            type: "setting",
+            name: "name",
+            value: "henry",
+        };
+        assert.deepEquals(actual, expected);
+    }
+    {
+        const actual = findToken("// @note");
+        const expected = {
+            type: "setting",
+            name: "note",
+            value: undefined,
+        };
+        assert.deepEquals(actual, expected);
+    }
     assert.end();
 });
 
