@@ -27,9 +27,11 @@ export class VarMap {
         this.entities = props?.entities ?? {};
     }
     
-    // public addVars(variables: StringMap) {
-    //     this.variables = {...this.variables, ...variables};
-    // }
+    public addVars(variables: StringMap) {
+        for (let [name, value] of Object.entries(variables)) {
+            this.addVar(name, value);
+        }
+    }
     
     public addVar(name: string, value: string) {
         this.variables[name] = value;
