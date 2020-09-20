@@ -20,25 +20,29 @@ export interface EntityResponse {
 }
 
 type Props = {
-    name?: string;
+    settings: Record<string, string | undefined>;
     request: EntityRequest;
     response: EntityResponse;
 }
 
 export class Entity {
     
-    readonly name?: string;
+    readonly settings: Record<string, string | undefined>;
     readonly request: EntityRequest;
     readonly response: EntityResponse;
     
     constructor(props: Props) {
-        this.name = props.name;
+        this.settings = props.settings;
         this.request = props.request;
         this.response = props.response;
     }
     
+    public get name() {
+        return this.settings.name;
+    }
+    
     public static async from(request: RestRequest, res: Response): Promise<Entity> {
-        const name = request.name;
+        const { settings } = request;
         
         const response = {
             body: await res.buffer(),
@@ -50,6 +54,6 @@ export class Entity {
             }
         };
         
-        return new Entity({ name, request, response });
+        return new Entity({ settings, request, response });
     }
 }

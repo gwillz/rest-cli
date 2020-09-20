@@ -71,11 +71,11 @@ export class RestParser {
             let step: Step = "init";
 
             const headers: StringMap = {};
+            const settings: StringMap = {};
             let request: RequestToken | undefined = undefined;
             let body = "";
             let filePath = "";
-            let name = "";
-
+            
             for (let line of part.split(/[\n\r]+/)) {
                 let token = findToken(line);
 
@@ -83,9 +83,9 @@ export class RestParser {
                 if (token && token.type == "variable" && step == "init") {
                     vars.addVar(token.name, token.value);
                 }
-                // name
-                else if (token && token.type == "name" && step == "init") {
-                    name = token.name;
+                // settings
+                else if (token && token.type == "setting" && step == "init") {
+                    settings[token.name] = token.value || '';
                 }
                 // request
                 else if (token && token.type == "request" && step == "init") {
@@ -122,12 +122,12 @@ export class RestParser {
             // no request
             if (!request) continue;
 
-            if (name) {
-                if (names.includes(name)) {
-                    throw new Error("duplicate name: " + name);
+            if (settings.name) {
+                if (names.includes(settings.name)) {
+                    throw new Error("duplicate name: " + settings.name);
                 }
                 else {
-                    names.push(name);
+                    names.push(settings.name);
                 }
             }
 
@@ -135,7 +135,7 @@ export class RestParser {
                 method: request.method,
                 url: request.url,
                 headers: headers,
-                name: name || undefined,
+                settings: settings,
                 body: body || undefined,
                 filePath: filePath || undefined,
             }));

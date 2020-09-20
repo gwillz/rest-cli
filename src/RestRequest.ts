@@ -4,11 +4,10 @@ import fs from './fs';
 import fetch, { Headers } from 'node-fetch';
 import { Method } from "./Token";
 import { VarMap } from './VarMap';
-import { bodyAsString } from './utils';
+import { bodyAsString, StringMap } from './utils';
 import { ServerError } from './ServerError';
 import { Entity } from './Entity';
 
-type StringMap = Record<string, string>;
 
 interface Props {
     method: Method;
@@ -17,6 +16,7 @@ interface Props {
     filePath?: string;
     body?: Buffer | string;
     name?: string;
+    settings?: Record<string, string | undefined>;
 }
 
 export class RestRequest {
@@ -26,7 +26,7 @@ export class RestRequest {
     body: string | Buffer | undefined;
     
     filePath?: string;
-    name?: string;
+    settings: Record<string, string | undefined>;
     
     constructor(props: Props) {
         this.method = props.method;
@@ -35,7 +35,7 @@ export class RestRequest {
         
         this.body = props.body;
         this.filePath = props.filePath;
-        this.name = props.name;
+        this.settings = props.settings || {};
     }
     
     public async fill(sourcePath: string, vars: VarMap): Promise<RestRequest> {
@@ -62,7 +62,7 @@ export class RestRequest {
             headers: vars.replaceHeaders(this.headers),
             body: body,
             filePath: this.filePath,
-            name: this.name,
+            settings: this.settings,
         });
     }
     
@@ -78,6 +78,10 @@ export class RestRequest {
         if (!res.ok) throw new ServerError(url, res);
         
         return await Entity.from(this, res);
+    }
+    
+    public get name(): string | undefined {
+        return this.settings.name;
     }
     
     public getSlug(): string {

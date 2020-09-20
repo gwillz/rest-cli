@@ -3,8 +3,8 @@ export type Method = "GET" | "PUT" | "PATCH" | "POST" | "DELETE" | "HEAD" | "OPT
 
 export type VariableToken =
     { type: "variable", name: string, value: string };
-export type NameToken =
-    { type: "name", name: string };
+export type SettingToken =
+    { type: "setting", name: string, value?: string };
 export type RequestToken =
     { type: "request", method: Method, url: string };
 export type RequestParamToken =
@@ -18,7 +18,7 @@ export type CommentToken =
 
 export type Token =
     | VariableToken
-    | NameToken
+    | SettingToken
     | RequestToken
     | RequestParamToken
     | HeaderToken
@@ -35,7 +35,7 @@ interface TokenRule {
 
 const TOKENS: TokenRule[] = [
     { type: "variable", regex: /^@(\w+)\s*=\s*(.+)$/ },
-    { type: "name", regex: /^(?:#+|\/\/+)\s*@name\s+(.+)$/ },
+    { type: "setting", regex: /^(?:#+|\/\/+)\s*@(\w+)\s*(\w+)?$/ },
     { type: "comment", regex: /^\s*(?:#|\/\/).*$/ },
     { type: "request_param", regex: /^\s*([&?].+)$/ },
     { type: "request", regex: /^(GET|PUT|PATCH|POST|DELETE|HEAD|OPTIONS)?\s*([^\s]+)\s*(HTTP\/[\d\.]+)?$/ },
@@ -51,8 +51,8 @@ export function findToken(line: string): Token | null {
         switch (type) {
             case "variable":
                 return { type, name: m[1], value: m[2].trim() };
-            case "name":
-                return { type, name: m[1].trim() };
+            case "setting":
+                return { type, name: m[1].trim(), value: m[2]?.trim() };
             case "request":
                 return { type, method: m[1] as Method || "GET", url: m[2].trim() };
             case "request_param":
