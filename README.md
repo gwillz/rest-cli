@@ -193,6 +193,7 @@ Below are defaults.
 - cli setting override options for:
   - timeout
   - config file
+- interpolate process.env variables into settings env variables
 - finish settings:
   - certificates
   - escaped unicode
