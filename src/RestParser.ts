@@ -24,9 +24,9 @@ export class RestParser {
         this.files = [];
         this.count = 0;
         this.options = {
-            ...options,
             env: '$shared',
             settings: new Settings(),
+            ...options,
         };
     }
 
