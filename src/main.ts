@@ -70,9 +70,28 @@ export async function main(argv = process.argv, cwd = process.cwd()) {
 
     const showRequest = showOptions('req', options);
     const showResponse = showOptions('res', options);
-
+    
+    // Load up settings.
     const settings = new Settings();
-    await settings.loadVsCode(cwd);
+    let found = false;
+    
+    // Look for a .vscode/settings.json file.
+    if (!found) {
+        found = await settings.loadVsCode(cwd);
+    }
+    
+    // Look for a package.json file.
+    if (!found) {
+        found = await settings.loadPackage(cwd);
+    }
+    
+    // Is '--env' a file path?
+    if (options.env && /\.json$/.test(options.env) ) {
+        let found = await settings.loadEnv(options.env);
+        if (found) {
+            options.env = '';
+        }
+    }
     
     const parser = new RestParser({
         env: options.env,
