@@ -9,7 +9,7 @@
             "password": "1234567890"
         },
         "production": {
-            "host": "http://example.com",
+            "host": "https://example.com",
             "password": "REDACTED"
         }
     }
