@@ -40,6 +40,8 @@ test("Settings: loadFile", a(async assert => {
     assert.equals(env.host, 'https://example.com');
     assert.equals(env.api, '/api/v0');
     assert.equals(env.password, 'REDACTED');
+    
+    assert.end();
 }));
 
 
@@ -70,6 +72,8 @@ test("Settings: loadVsCode", a(async assert => {
     env = settings.getEnvironment('production');
     assert.equals(env.id, 'vscode'); 
     assert.equals(env.password, 'REDACTED');
+    
+    assert.end();
 }));
 
 
@@ -100,19 +104,18 @@ test("Settings: loadPackage", a(async assert => {
     env = settings.getEnvironment('production');
     assert.equals(env.id, 'package');
     assert.equals(env.password, 'REDACTED');
+    
+    assert.end();
 }));
 
 
 function a(cb: (test: test.Test) => Promise<void>): (test: test.Test) => Promise<void> {
     return async (test) => {
         try {
-            cb(test);
+            await cb(test);
         }
         catch (error) {
-            test.fail(error);
-        }
-        finally {
-            test.end();
+            test.end(error);
         }
     }
 }
