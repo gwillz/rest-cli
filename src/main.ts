@@ -324,9 +324,14 @@ function help() {
 }
 
 async function version() {
-    return import(__dirname + "/../../package.json")
-    .catch(_ => import(__dirname + "/../package.json"))
-    .then(pkg => {
-        console.log(`${pkg.name}: version ${pkg.version}`);
-    });
+    let pkg: any;
+    
+    try {
+        pkg = await import(__dirname + "/../../package.json");
+    }
+    catch (error) {
+        pkg = await import(__dirname + "/../package.json");
+    }
+    
+    console.log(`${pkg.name}: version ${pkg.version}`);
 }
