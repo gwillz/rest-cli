@@ -6,6 +6,12 @@ A request runner inspired by
 This tool is intended to be compliant with Hauchao's VSCode plugin so that
 requests can be sequenced via command line tools.
 
+There is no intention to extend features in this project beyond what is already
+capable in the plugin. Ideally, one can execute the very same files with the
+same environment interchangeably between the plugin and this tool.
+
+If you need extra features, feel free to fork this project.
+
 
 ## Usage
 ```sh
@@ -53,6 +59,8 @@ restcli --no-color myrequest.http
 ## API
 
 This package exports a file parser and utilities for automating your requests.
+
+See the `main.ts` file for extended usage.
 
 Typescript defs are also exported.
 
