@@ -39,6 +39,12 @@ restcli --response slug|headers|body myrequest.http
 # Show everything.
 restcli --full myrequest.http
 
+# Use production env variables.
+restcli --env production myrequest.http
+
+# Load in a json file of variables.
+restcli --env env.json myrequest.http
+
 # Disable colour.
 restcli --no-color myrequest.http
 ```
@@ -138,6 +144,31 @@ GET {{baseUrl}}/comments/{{commentId}}/replies/{{getReplies.response.body.//repl
 ## Not supported
 - $aadToken
 - extension (%varname) environment variables
+
+
+## Supported Rest-Client settings
+
+It's lies, only `environmentVariables` is currently supported.
+
+Below are defaults.
+
+```json
+{
+  "rest-client.certificates": {},
+  "rest-client.environmentVariables": {
+    "$shared": {}
+  },
+  "rest-client.decodeEscapedUnicodeCharacters": false,
+  "rest-client.defaultHeaders": {
+    "User-Agent": "vscode-restclient"
+  },
+  "rest-client.excludeHostsForProxy": [],
+  "rest-client.followredirect": true,
+  "rest-client.formParamEncodingStrategy": "always",
+  "rest-client.rememberCookiesForSubsequentRequests": true,
+  "rest-client.timeoutinmilliseconds": 0,
+}
+```
 
 
 ## TODO
