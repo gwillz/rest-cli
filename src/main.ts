@@ -9,6 +9,7 @@ import { getArgs, retry, capitalise, bodyFormat, expandPaths } from './utils';
 import { EntityResponse } from './Entity';
 import FUNCTIONS, { isFunction } from './functions';
 import { highlight } from 'cli-highlight';
+import { Settings } from './Settings';
 
 /**
  * Execute main if this is the calling module.
@@ -23,7 +24,7 @@ if (require.main === module) {
 /**
  * Program entry.
  */
-export async function main(argv = process.argv) {
+export async function main(argv = process.argv, cwd = process.cwd()) {
     const { args, options } = getArgs([
         "full",
         "no-stats",
@@ -70,8 +71,14 @@ export async function main(argv = process.argv) {
     const showRequest = showOptions('req', options);
     const showResponse = showOptions('res', options);
 
-    const parser = new RestParser();
-
+    const settings = new Settings();
+    await settings.loadVsCode(cwd);
+    
+    const parser = new RestParser({
+        env: options.env,
+        settings: settings,
+    });
+    
     // Load all the files into the parser.
     for await (let filePath of expandPaths(...args)) {
         await parser.readFile(filePath);
