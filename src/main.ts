@@ -307,6 +307,7 @@ function help() {
     console.log("  --retry [-r] <number> (default: 3)");
     console.log("  --pick  [-p] <name>");
     console.log("  --quiet [-q]");
+    console.log("  --env <name or path/to.json>");
     console.log("  --no-color");
     console.log("  --no-highlight");
     console.log("  --no-stats");
