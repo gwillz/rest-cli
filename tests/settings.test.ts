@@ -1,6 +1,7 @@
 
 import test from 'tape';
 import path from 'path';
+import os from 'os';
 import { a } from './test';
 
 import { Settings } from '../src/Settings';
@@ -29,6 +30,7 @@ test("Settings: loadEnv", a(async assert => {
     assert.equals(env.host, 'http://localhost:3000');
     assert.equals(env.api, '/api/v0');
     assert.equals(env.password, '1234567890');
+    assert.equals(env.home, os.homedir());
     
     env = settings.getEnvironment('whatever');
     assert.equals(env.id, 'custom');
