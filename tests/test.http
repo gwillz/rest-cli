@@ -19,6 +19,7 @@ Content-Type: application/json
 @user_id = {{andrew.response.body.$.user_id}}
 
 # @name yep
+# @note
 GET {{api}}/users/{{user_id}} HTTP/1.1
 Authorization: Basic andrew {{password}}
 
