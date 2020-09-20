@@ -16,8 +16,12 @@ interface Props {
     filePath?: string;
     body?: Buffer | string;
     name?: string;
-    settings?: Record<string, string | undefined>;
+    settings?: RequestSettings;
 }
+
+// TODO Fill this in with fixed names.
+// TODO Convert from rest-client names (defined in Settings).
+export interface RequestSettings extends Record<string, string | undefined> {}
 
 export class RestRequest {
     method: Method;
@@ -26,7 +30,7 @@ export class RestRequest {
     body: string | Buffer | undefined;
     
     filePath?: string;
-    settings: Record<string, string | undefined>;
+    settings: RequestSettings;
     
     constructor(props: Props) {
         this.method = props.method;

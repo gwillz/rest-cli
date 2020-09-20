@@ -1,5 +1,5 @@
 
-import { RestRequest } from "./RestRequest";
+import { RestRequest, RequestSettings } from "./RestRequest";
 import { Response, Headers } from "node-fetch";
 import { bodyAsString } from "./utils";
 
@@ -20,14 +20,14 @@ export interface EntityResponse {
 }
 
 type Props = {
-    settings: Record<string, string | undefined>;
+    settings: RequestSettings;
     request: EntityRequest;
     response: EntityResponse;
 }
 
 export class Entity {
     
-    readonly settings: Record<string, string | undefined>;
+    readonly settings: RequestSettings;
     readonly request: EntityRequest;
     readonly response: EntityResponse;
     
