@@ -48,6 +48,7 @@
     "chalk": "^3.0.0",
     "cli-highlight": "^2.1.4",
     "dotenv": "^8.2.0",
+    "enquirer": "^2.3.6",
     "fecha": "^4.0.0",
     "glob": "^7.1.6",
     "jsonpath-plus": "^2.0.0",
