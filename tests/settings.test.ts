@@ -1,7 +1,6 @@
 
 import test from 'tape';
 import path from 'path';
-import os from 'os';
 import { a } from './test';
 
 import { Settings } from '../src/Settings';
@@ -10,6 +9,10 @@ const r = path.resolve.bind(null, __dirname);
 const TEST_FILE = r("settings.json");
 
 test("Settings: loadEnv", a(async assert => {
+    
+    // Mock an env variable.
+    process.env.TEST = 'hey there';
+    
     const settings = new Settings();
     
     // It's empty.
@@ -30,7 +33,7 @@ test("Settings: loadEnv", a(async assert => {
     assert.equals(env.host, 'http://localhost:3000');
     assert.equals(env.api, '/api/v0');
     assert.equals(env.password, '1234567890');
-    assert.equals(env.home, os.homedir());
+    assert.equals(env.test, 'hey there');
     
     env = settings.getEnvironment('whatever');
     assert.equals(env.id, 'custom');

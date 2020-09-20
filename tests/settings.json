@@ -3,5 +3,5 @@
     "api": "/api/v0",
     "id": "custom",
     "password": "1234567890",
-    "home": "HOME"
+    "test": "TEST"
 }
