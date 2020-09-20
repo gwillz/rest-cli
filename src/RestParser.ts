@@ -5,18 +5,29 @@ import { findToken, RequestToken } from './Token';
 import { VarMap } from './VarMap';
 import { RestFile } from './RestFile';
 import { StringMap } from './utils';
+import { Settings } from './Settings';
 
 type Step = "init" | "request" | "body" | "file";
 
+type ParserOptions = {
+    env: string;
+    settings: Settings;
+}
 
 export class RestParser {
 
     files: RestFile[];
     count: number;
+    options: ParserOptions;
 
-    constructor() {
+    constructor(options: Partial<ParserOptions> = {}) {
         this.files = [];
         this.count = 0;
+        this.options = {
+            ...options,
+            env: '$shared',
+            settings: new Settings(),
+        };
     }
 
     public async get(name: string | number): Promise<RestRequest | null> {
@@ -41,7 +52,7 @@ export class RestParser {
     public isEmpty() {
         return this.size() == 0;
     }
-
+    
     public async readFile(filePath: string) {
         const contents = await fs.readFile(filePath, 'utf-8');
         this.readString(filePath, contents);
@@ -52,7 +63,10 @@ export class RestParser {
         const vars = new VarMap();
         const names: string[] = [];
         const requests: RestRequest[] = [];
-
+        
+        // Chuck in those environment variables.
+        vars.addVars(this.options.settings.getEnvironment(this.options.env));
+        
         for (let part of contents.split(/###+.*\n/)) {
             let step: Step = "init";
 
