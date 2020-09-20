@@ -61,7 +61,7 @@ export function safeParseJson(body: string): any {
 type Args = {
     node: string;
     script: string;
-    options: StringMap;
+    options: Record<string, string | undefined>;
     args: string[];
 }
 
