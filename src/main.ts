@@ -322,13 +322,13 @@ function testHelper(helper: string, args: string[]) {
 }
 
 function help() {
-    console.log("rest-cli: A HTTP/REST file sequencer.");
+    console.log("restcli: A HTTP/REST file sequencer.");
     console.log("");
     console.log("Usage:");
-    console.log("  rest-cli {options} file1 file2 ...");
-    console.log("  rest-cli --helper <name> {args...}");
-    console.log("  rest-cli --help");
-    console.log("  rest-cli --version");
+    console.log("  restcli {options} file1 file2 ...");
+    console.log("  restcli --helper <name> {args...}");
+    console.log("  restcli --help");
+    console.log("  restcli --version");
     console.log("");
     console.log("Options:");
     console.log("  --retry [-r] <number> (default: 3)");
