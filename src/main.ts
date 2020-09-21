@@ -11,6 +11,15 @@ import FUNCTIONS, { isFunction } from './functions';
 import { highlight } from 'cli-highlight';
 import { Settings } from './Settings';
 
+const NONE = 0;
+const RES_HEADERS = 1;
+const RES_BODY = 2;
+const RES_FULL = RES_HEADERS | RES_BODY;
+const REQ_HEADERS = 4;
+const REQ_BODY = 8;
+const REQ_FULL = REQ_HEADERS | REQ_BODY;
+const EXCHANGE = REQ_FULL | RES_FULL;
+
 /**
  * Execute main if this is the calling module.
  * Also attaches TS source-map support and clean rejection handling.
@@ -65,11 +74,14 @@ export async function main(argv = process.argv, cwd = process.cwd()) {
     // Nuke it.
     if (options.quiet || options.q) {
         console.log = () => {};
+        console.warn = () => {};
+        console.error = () => {};
         process.stdout.write = () => true;
+        process.stderr.write = () => true;
     }
-
-    const showRequest = showOptions('req', options);
-    const showResponse = showOptions('res', options);
+    
+    const isFull = options.full || options.f || options.pick || options.p;
+    const preview = parsePreviewOption(options.show, isFull);
     
     // Load up settings.
     const settings = new Settings();
@@ -125,16 +137,18 @@ export async function main(argv = process.argv, cwd = process.cwd()) {
             // Keep trying.
             await retry(retryMax, async attempt => {
                 if (showStats) {
-                    process.stdout.write(chalk.grey(`${requestName}: [${attempt}] `));
+                    process.stderr.write(chalk.grey(`${requestName} `));
+                    process.stderr.write(chalk.grey(`[${attempt}] `));
+                    process.stderr.write(chalk.white(req.getSlug()), "\n");
                 }
                 
-                printRequest(req, showRequest, showHighlight);
+                printRequest(req);
 
                 // Do it.
                 let entity = await req.request();
                 if (entity === false) return;
                 
-                printResponse(entity.response, showResponse, showHighlight);
+                printResponse(entity.response);
             });
         }
 
@@ -149,10 +163,13 @@ export async function main(argv = process.argv, cwd = process.cwd()) {
                     // Keep trying.
                     await retry(retryMax, async attempt => {
                         if (showStats) {
-                            process.stdout.write(chalk.grey(`${file.getFileName()}:${index} [${attempt}] `));
+                            process.stderr.write(chalk.grey(`${file.getFileName()}:${index} `));
+                            process.stderr.write(chalk.grey(`[${attempt}] `));
+                            process.stderr.write(chalk.white(req.getSlug()) + "\n");
                         }
-                        printRequest(req, showRequest, showHighlight);
-
+                        
+                        printRequest(req);
+                        
                         // Do it.
                         const entity = await req.request();
                         if (entity === false) return;
@@ -162,7 +179,7 @@ export async function main(argv = process.argv, cwd = process.cwd()) {
                             file.vars.addEntity(entity);
                         }
 
-                        printResponse(entity.response, showResponse, showHighlight);
+                        printResponse(entity.response);
                     });
                 }
 
@@ -171,8 +188,8 @@ export async function main(argv = process.argv, cwd = process.cwd()) {
     }
     catch (error) {
         // Oh nooo.
-        console.log(chalk.red(error.message));
-
+        console.error(chalk.red(error.message));
+        
         // Oh, okay.
         if (isServerError(error)) {
             console.log(chalk.red(await error.response.text()));
@@ -180,63 +197,66 @@ export async function main(argv = process.argv, cwd = process.cwd()) {
 
         process.exitCode = 1;
     }
-}
-
-/**
- * Print data about the request according to the cmd options.
- */
-function printRequest(req: RestRequest, options: Options, inColor: boolean) {
-    // Slug.
-    console.log(chalk.white(req.getSlug()));
-
-    // Headers.
-    if (options.headers) {
-        printHeaders(req.headers);
-        console.log("");
+    
+    
+    /**
+     * Print data about the request according to the cmd options.
+     */
+    function printRequest(req: RestRequest) {
+        // Headers.
+        if (preview & REQ_HEADERS) {
+            console.log(req.getSlug());
+            printHeaders(req.headers);
+            console.log("");
+        }
+    
+        // Body.
+        if (preview & REQ_BODY) {
+            const body = req.filePath ?? bodyFormat(req);
+            if (body) {
+                if (showHighlight) {
+                    console.log(highlight(body, { ignoreIllegals: true }));
+                }
+                else {
+                    console.log(body);
+                }
+                console.log("")
+            }
+        }
     }
-
-    // Body.
-    if (options.body) {
-        const body = req.filePath ?? bodyFormat(req);
-        if (body) {
-            if (inColor) {
-                console.log(highlight(body, { ignoreIllegals: true }));
+    
+    /**
+     * Print data about the response according to the cmd options.
+     */
+    function printResponse(res: EntityResponse) {
+        // Status.
+        // Headers.
+        if (preview & RES_HEADERS) {
+            console.log(chalk.yellow(`HTTP/1.1 ${res.status} ${res.statusText}`));
+            
+            if (res.headers) {
+                printHeaders(res.headers);
+                console.log("");
             }
-            else {
-                console.log(body);
+        }
+    
+        // Make it pretty! If possible. Mostly just JSON and XML.
+        if (preview & RES_BODY) {
+            const body = bodyFormat(res);
+            
+            if (body) {
+                if (showHighlight) {
+                    console.log(highlight(body, { ignoreIllegals: true }));
+                }
+                else {
+                    console.log(body);
+                }
+                console.log("")
             }
-            console.log("")
         }
     }
 }
 
-/**
- * Print data about the response according to the cmd options.
- */
-function printResponse(res: EntityResponse, options: Options, inColor: boolean) {
-    // Slug.
-    console.log(chalk.yellow(`HTTP/1.1 ${res.status} ${res.statusText}`));
-
-    // Headers.
-    if (options.headers && res.headers) {
-        printHeaders(res.headers);
-        console.log("");
-    }
-
-    // Make it pretty! If possible. Mostly just JSON and XML.
-    if (options.body) {
-        const body = bodyFormat(res);
-        if (body) {
-            if (inColor) {
-                console.log(highlight(body, { ignoreIllegals: true }));
-            }
-            else {
-                console.log(body);
-            }
-            console.log("")
-        }
-    }
-}
 
 /**
  * Print out the headers - now in colour!
@@ -247,26 +267,28 @@ function printHeaders(headers: Headers) {
     }
 }
 
-type Options = {
-    // slug: boolean;
-    headers: boolean;
-    body: boolean;
-}
-
-/**
- * What data should we show for a request or response?
- * If 'full' then it's just everything.
- */
-function showOptions(prefix: 'res' | 'req', options: Record<string, string | undefined>): Options {
-    const isFull = !!options.full || !!options.f;
-
-    if (options.pick && prefix === 'res') {
-        return { headers: true, body: true };
-    }
-
-    return {
-        headers: isFull || !!options[prefix] || !!options[`${prefix}-head`],
-        body: isFull || !!options[prefix] || !!options[`${prefix}-body`],
+function parsePreviewOption(value: string | undefined, full: string | undefined): number {
+    if (full) return EXCHANGE;
+    if (!value) return NONE;
+    
+    switch (value) {
+        default:
+        case '':
+        case 'none':
+        case 'quiet':
+            return NONE;
+            
+        case 'headers':
+            return RES_HEADERS;
+            
+        case 'body':
+            return RES_BODY;
+            
+        case 'full':
+            return RES_FULL;
+            
+        case 'exchange':
+            return EXCHANGE;
     }
 }
 
@@ -310,19 +332,19 @@ function help() {
     console.log("  --retry [-r] <number> (default: 3)");
     console.log("  --pick  [-p] <name>");
     console.log("  --quiet [-q]");
-    console.log("  --env <name or path/to.json>");
+    console.log("  --env <name>          An environment name (e.g. production)");
+    console.log("  --env <path/to.json>  A file of variables");
     console.log("  --no-color");
     console.log("  --no-highlight");
     console.log("  --no-stats");
     console.log("");
     console.log("Display options:");
-    console.log("  --full [-f]");
-    console.log("  --req");
-    console.log("  --req-head");
-    console.log("  --req-body");
-    console.log("  --res");
-    console.log("  --res-head");
-    console.log("  --res-body");
+    console.log("  --full [-f]      (same as --show exchange)");
+    console.log("  --show none      request URL only (default)");
+    console.log("  --show headers   response headers");
+    console.log("  --show body      response body");
+    console.log("  --show exchange  request + response, headers + body");
+    console.log("                   (default when --pick)");
     console.log("");
 }
 
