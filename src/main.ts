@@ -131,18 +131,13 @@ export async function main(argv = process.argv, cwd = process.cwd()) {
 
             // Que?
             if (!req) {
-                console.log(chalk`{red Cannot find request:} {white ${requestName}}`);
+                console.error(chalk`{red Cannot find request:} {white ${requestName}}`);
                 return;
             }
 
             // Keep trying.
             await retry(retryMax, async attempt => {
-                if (showStats) {
-                    process.stderr.write(chalk.grey(`${requestName} `));
-                    process.stderr.write(chalk.grey(`[${attempt}] `));
-                    process.stderr.write(chalk.white(req.getSlug()), "\n");
-                }
-                
+                printStats(requestName, attempt, req);
                 printRequest(req);
 
                 // Hold up, maybe.
@@ -175,12 +170,7 @@ export async function main(argv = process.argv, cwd = process.cwd()) {
 
                     // Keep trying.
                     await retry(retryMax, async attempt => {
-                        if (showStats) {
-                            process.stderr.write(chalk.grey(`${file.getFileName()}:${index} `));
-                            process.stderr.write(chalk.grey(`[${attempt}] `));
-                            process.stderr.write(chalk.white(req.getSlug()) + "\n");
-                        }
-                        
+                        printStats(`${file.getFileName()}:${index}`, attempt, req);
                         printRequest(req);
                         
                         // Hold up, maybe.
@@ -221,6 +211,12 @@ export async function main(argv = process.argv, cwd = process.cwd()) {
         }
 
         process.exitCode = 1;
+    }
+    
+    
+    function printStats(prefix: string, attempt: number, req: RestRequest) {
+        if (!showStats) return;
+        console.error(chalk`{grey ${prefix} [${attempt}]} {white ${req.getSlug()}}`);
     }
     
     
