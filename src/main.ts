@@ -10,6 +10,7 @@ import { EntityResponse } from './Entity';
 import FUNCTIONS, { isFunction } from './functions';
 import { highlight } from 'cli-highlight';
 import { Settings } from './Settings';
+import { prompt } from 'enquirer';
 
 const NONE = 0;
 const RES_HEADERS = 1;
@@ -144,9 +145,21 @@ export async function main(argv = process.argv, cwd = process.cwd()) {
                 
                 printRequest(req);
 
+                // Hold up, maybe.
+                if (req.settings.note !== undefined) {
+                    const ok = await prompt({
+                        type: 'confirm',
+                        name: 'ok',
+                        message: 'Continue?',
+                        stdout: process.stderr,
+                    });
+                    
+                    // @ts-expect-error
+                    if (!ok.ok) return;
+                }
+                
                 // Do it.
                 let entity = await req.request();
-                if (entity === false) return;
                 
                 printResponse(entity.response);
             });
@@ -170,9 +183,21 @@ export async function main(argv = process.argv, cwd = process.cwd()) {
                         
                         printRequest(req);
                         
+                        // Hold up, maybe.
+                        if (req.settings.note !== undefined) {
+                            const ok = await prompt({
+                                type: 'confirm',
+                                name: 'ok',
+                                message: 'Continue?',
+                                stdout: process.stderr,
+                            });
+                            
+                            // @ts-expect-error
+                            if (!ok.ok) return;
+                        }
+                        
                         // Do it.
                         const entity = await req.request();
-                        if (entity === false) return;
 
                         // console.log(req.name, entity.name);
                         if (entity.name) {

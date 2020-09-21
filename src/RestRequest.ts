@@ -2,7 +2,6 @@
 import path from 'path';
 import fs from './fs';
 import fetch, { Headers } from 'node-fetch';
-import { prompt } from 'enquirer';
 import { Method } from "./Token";
 import { VarMap } from './VarMap';
 import { bodyAsString, StringMap } from './utils';
@@ -70,19 +69,8 @@ export class RestRequest {
         });
     }
     
-    public async request(): Promise<Entity | false> {
+    public async request(): Promise<Entity> {
         const { method, headers, url, body } = this;
-        
-        if (this.settings.note !== undefined) {
-            const ok = await prompt({
-                type: 'confirm',
-                name: 'ok',
-                message: 'Continue?',
-            });
-            
-            // @ts-expect-error
-            if (!ok.ok) return false;
-        }
         
         const res = await fetch(url, {
             body,
