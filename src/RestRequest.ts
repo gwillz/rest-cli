@@ -7,6 +7,7 @@ import { VarMap } from './VarMap';
 import { bodyAsString, StringMap } from './utils';
 import { ServerError } from './ServerError';
 import { Entity } from './Entity';
+import { prompt } from 'enquirer';
 
 interface Props {
     method: Method;
@@ -81,6 +82,22 @@ export class RestRequest {
         if (!res.ok) throw new ServerError(url, res);
         
         return await Entity.from(this, res);
+    }
+    
+    public async confirm(): Promise<boolean> {
+        if (this.settings.note === undefined) {
+            return true;
+        }
+        
+        const ok = await prompt({
+            type: 'confirm',
+            name: 'ok',
+            message: 'Continue?',
+            stdout: process.stderr,
+        });
+        
+        // @ts-expect-error
+        return ok.ok;
     }
     
     public get name(): string | undefined {

@@ -10,7 +10,6 @@ import { EntityResponse } from './Entity';
 import FUNCTIONS, { isFunction } from './functions';
 import { highlight } from 'cli-highlight';
 import { Settings } from './Settings';
-import { prompt } from 'enquirer';
 
 const NONE = 0;
 const RES_HEADERS = 1;
@@ -139,20 +138,11 @@ export async function main(argv = process.argv, cwd = process.cwd()) {
             await retry(retryMax, async attempt => {
                 printStats(requestName, attempt, req);
                 printRequest(req);
-
-                // Hold up, maybe.
-                if (req.settings.note !== undefined) {
-                    const ok = await prompt({
-                        type: 'confirm',
-                        name: 'ok',
-                        message: 'Continue?',
-                        stdout: process.stderr,
-                    });
-                    
-                    // @ts-expect-error
-                    if (!ok.ok) return;
-                }
                 
+                // Hold up, maybe.
+                const ok = await req.confirm();
+                if (!ok) return;
+
                 // Do it.
                 let entity = await req.request();
                 
@@ -174,17 +164,8 @@ export async function main(argv = process.argv, cwd = process.cwd()) {
                         printRequest(req);
                         
                         // Hold up, maybe.
-                        if (req.settings.note !== undefined) {
-                            const ok = await prompt({
-                                type: 'confirm',
-                                name: 'ok',
-                                message: 'Continue?',
-                                stdout: process.stderr,
-                            });
-                            
-                            // @ts-expect-error
-                            if (!ok.ok) return;
-                        }
+                        const ok = await req.confirm();
+                        if (!ok) return;
                         
                         // Do it.
                         const entity = await req.request();
