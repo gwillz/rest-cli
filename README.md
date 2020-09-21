@@ -186,6 +186,7 @@ missing to make it more compatible with the plugin.
 
 Feel free to jump in on any of these.
 
+- just use yargs already
 - variables should be recursively interpolated when used - instead of statically
 - GraphQL support
 - multipart file loading support
@@ -194,17 +195,6 @@ Feel free to jump in on any of these.
 - more doc comments
 - better readme docs
 - interpolating `{{$shared name}}` in environment files
-
-Output options:
-- Simpler options, match the rest-client ones:
-  - full: response status, header, body
-  - header: response status, headers
-  - body: response body
-  - exchange: request slug + header + body, response status + header + body
-
-I think for full/header/body the request slug should still be present. But instead
-it should be piped into the stdout. One is then able to bash pipe the response data
-wherever they please without the noise.
 
 Per-request settings:
   - escaped unicode
@@ -223,7 +213,6 @@ Tests:
 
 CLI options:
   - timeout
-  - preview option
   - config file
 
 Settings:
