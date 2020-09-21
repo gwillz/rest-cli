@@ -36,14 +36,11 @@ restcli --pick myname myrequest.http
 # Hide the stats (1: [2]).
 restcli --no-stats myrequest.http
 
-# Show the request.
-restcli --request slug|headers|body myrequest.http
-
-# Show the response.
-restcli --response slug|headers|body myrequest.http
-
-# Show everything.
-restcli --full myrequest.http
+# Show different level of information.
+restcli --show headers myrequest.http
+restcli --show body myrequest.http
+restcli --show full myrequest.http
+restcli --show exchange myrequest.http
 
 # Use production env variables.
 restcli --env production myrequest.http
@@ -191,7 +188,6 @@ Feel free to jump in on any of these.
 - GraphQL support
 - multipart file loading support
 - cookies??
-- save to folder
 - more doc comments
 - better readme docs
 - interpolating `{{$shared name}}` in environment files
@@ -200,7 +196,7 @@ Per-request settings:
   - escaped unicode
   - follow redirects
   - form param encoding
-  - preview option
+  - preview option (overrides CLI + settings)
   - remember cookies
   - timeout
 
@@ -214,6 +210,8 @@ Tests:
 CLI options:
   - timeout
   - config file
+  - disable confirm prompts
+  - save to folder (optionally just files or everything)
 
 Settings:
   - certificates
@@ -221,7 +219,7 @@ Settings:
   - default headers
   - follow redirects
   - form param encoding
-  - preview option 
+  - preview option (overridden by CLI + per-request setting)
   - proxy exclude hosts
   - remember cookies
   - timeout
