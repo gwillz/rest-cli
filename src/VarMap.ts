@@ -131,7 +131,8 @@ export class VarMap {
                     const json = safeParseJson(body);
                     if (!json) return body + "";
                     
-                    return JSONPath({ path, json });
+                    const value = JSONPath({ path, json, wrap: false });
+                    return JSON.stringify(value);
                 }
                 
                 // xpath

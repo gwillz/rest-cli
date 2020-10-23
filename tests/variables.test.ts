@@ -66,6 +66,18 @@ test("VarMap: request json body", assert => {
     assert.end();
 });
 
+test("VarMap: request json body - bits of json", assert => {
+    const vars = new VarMap({ entities: {
+        test: mockEntity(),
+    }});
+    
+    const actual = vars.replace("{{test.request.body.$.one}}");
+    const expected = '{"two":3}';
+    
+    assert.equals(actual, expected);
+    assert.end();
+});
+
 test("VarMap: response header", assert => {
     const vars = new VarMap({ entities: {
         test: mockEntity(),
