@@ -21,7 +21,7 @@ test("functions: randomInt", assert => {
     const lower = FUNCTIONS.randomInt("100", "200");
     assert.equals(lower, "100");
     
-    Math.random = () => 0.5;
+    Math.random = () => 0.50789;
     const half = FUNCTIONS.randomInt("100", "200");
     assert.equals(half, "150");
     

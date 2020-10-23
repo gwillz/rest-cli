@@ -12,7 +12,7 @@ export function randomInt(min?: string, max?: string) {
     if (min === void 0 || max === void 0) {
         throw new Error("randomInt requires 'min', 'max'.");
     }
-    return Math.random() * (+max - +min) + (+min) + "";
+    return Math.floor(Math.random() * (+max - +min) + (+min)) + "";
 }
 
 export function timestamp(offset?: string, option?: string) {
