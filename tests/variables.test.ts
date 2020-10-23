@@ -149,11 +149,17 @@ test("VarMap: $datetime rfc1123 -10 years", assert => {
 test("VarMap: $datetime iso8601", assert => {
     const vars = new VarMap();
     
+    const save = Date.prototype.toISOString;
+    const fixedDate = new Date().toISOString();
+    Date.prototype.toISOString = () => fixedDate;
+    
     const actual = vars.replace("{{$datetime iso8601}}");
     const expected = new Date().toISOString();
     
-    assert.true(actual, expected);
+    assert.equals(actual, expected);
     assert.end();
+    
+    Date.prototype.toISOString = save;
 });
 
 test("VarMap: $localDatetime custom", assert => {
