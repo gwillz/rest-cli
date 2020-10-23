@@ -1,6 +1,6 @@
 {
   "name": "rest-cli",
-  "version": "1.7.6",
+  "version": "1.7.7",
   "description": "",
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
