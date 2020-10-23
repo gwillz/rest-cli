@@ -14,7 +14,7 @@ function mockEntity(): Entity {
             headers: new Headers({
                 'content-type': 'application/json',
             }),
-            body: '{"one":{"two":3}}',
+            body: '{"one":{"two":3,"oh":"no"}}',
             getBody() { return this.body + "" },
         },
         response: {
@@ -72,7 +72,19 @@ test("VarMap: request json body - bits of json", assert => {
     }});
     
     const actual = vars.replace("{{test.request.body.$.one}}");
-    const expected = '{"two":3}';
+    const expected = '{"two":3,"oh":"no"}';
+    
+    assert.equals(actual, expected);
+    assert.end();
+});
+
+test("VarMap: request json body - strings", assert => {
+    const vars = new VarMap({ entities: {
+        test: mockEntity(),
+    }});
+    
+    const actual = vars.replace("{{test.request.body.$..oh}}");
+    const expected = 'no';
     
     assert.equals(actual, expected);
     assert.end();

@@ -132,7 +132,13 @@ export class VarMap {
                     if (!json) return body + "";
                     
                     const value = JSONPath({ path, json, wrap: false });
-                    return JSON.stringify(value);
+                    
+                    if (typeof value === 'object') {
+                        return JSON.stringify(value);
+                    }
+                    else {
+                        return value;
+                    }
                 }
                 
                 // xpath
