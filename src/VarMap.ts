@@ -231,7 +231,14 @@ export class VarMap {
                     const json = safeParseJson(body);
                     if (!json) return body + "";
                     
-                    const value = JSONPath({ path, json, wrap: false });
+                    const value = JSONPath({
+                        path,
+                        json,
+                        // No array wraps.
+                        wrap: false,
+                        // Because despite 'no wrap', it still wraps arrays.
+                        flatten: true,
+                    });
                     
                     // Can't have [object Object], gotta be JSON strings.
                     if (typeof value === 'object') {
