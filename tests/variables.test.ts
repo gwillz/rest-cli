@@ -213,6 +213,22 @@ test("VarMap: $datetime iso8601", assert => {
     Date.prototype.toISOString = save;
 });
 
+test("VarMap: $datetime iso8601 offset 3 days", assert => {
+    const vars = new VarMap();
+    
+    const saveNow = Date.now;
+    const fixedNow = Date.now();
+    Date.now = () => fixedNow;
+    
+    const actual = vars.replace("{{$datetime iso8601 3 d}}");
+    const expected = new Date(fixedNow + 3 * 24 * 60 * 60 * 1000).toISOString();
+    
+    assert.equals(actual, expected);
+    assert.end();
+    
+    Date.now = saveNow;
+});
+
 test("VarMap: $localDatetime custom", assert => {
     const vars = new VarMap();
     
