@@ -34,28 +34,33 @@ test("functions: randomInt", assert => {
 });
 
 test("functions: timestamp", assert => {
-    const resolution = 1000;
-    const now = FUNCTIONS.timestamp();
+    const save = Date.now;
+    const fixedNow = Date.now();
+    Date.now = () => fixedNow;
     
-    const actual = (+now / resolution).toFixed(0);
-    const expected = (+new Date() / resolution).toFixed(0);
+    const actual = FUNCTIONS.timestamp();
+    const expected = Date.now() + "";
     
     assert.equals(actual, expected);
     assert.end();
+    
+    Date.now = save;
 });
 
 test("functions: timestamp offset", assert => {
-    const resolution = 1000;
-    const now = FUNCTIONS.timestamp("1", "h");
+    const save = Date.now;
+    const fixedNow = Date.now();
+    Date.now = () => fixedNow;
     
-    const actual = (+now / resolution).toFixed(0);
-    const expected = (+new Date() / resolution).toFixed(0);
+    const actual = FUNCTIONS.timestamp("1", "h");
+    const expected = (Date.now() + 60 * 60 * 1000) + "";
     
-    // @todo Not great.
-    assert.notEquals(actual, expected);
-    
+    assert.equals(actual, expected);
     assert.end();
+    
+    Date.now = save;
 });
+
 
 // @todo datetime
 

@@ -171,14 +171,20 @@ test("VarMap: $randomInt", assert => {
     Math.random = save;
 });
 
-test("VarMap: $timestamp -60 seconds", assert => {
+test("VarMap: $timestamp 60 seconds", assert => {
+    const save = Date.now;
+    const fixedNow = Date.now();
+    Date.now = () => fixedNow;
+    
     const vars = new VarMap();
     
-    const actual = vars.replace("{{$timestamp -60 s}}");
-    const expected = (+new Date()) + "";
+    const actual = vars.replace("{{$timestamp 60 s}}");
+    const expected = Date.now() + "";
     
-    assert.true(actual < expected, `${actual} < ${expected}`);
+    assert.true(actual > expected, `${actual} > ${expected}`);
     assert.end();
+    
+    Date.now = save;
 });
 
 test("VarMap: $datetime rfc1123 -10 years", assert => {
