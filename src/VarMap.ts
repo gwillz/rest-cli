@@ -155,12 +155,12 @@ export class VarMap {
             
             const entity = this.entities[root];
             if (entity) {
-                const property = entity[type as "request" | "request"];
+                const property = entity[type as "request" | "response"];
                 return property.headers.get(name);
             }
         }
         
-        return "";
+        return null;
     }
     
     /**
@@ -186,7 +186,7 @@ export class VarMap {
             }
         }
         
-        return "";
+        return null;
     }
     
     /**
