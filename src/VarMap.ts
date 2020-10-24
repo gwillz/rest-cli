@@ -8,7 +8,8 @@ import { Headers } from 'node-fetch';
 import FUNCTIONS, { isFunction } from './functions';
 
 type Props = {
-    variables?: StringMap,
+    variables?: StringMap;
+    globals?: StringMap;
     entities?: EntityMap;
 }
 
@@ -32,9 +33,14 @@ const BODY_RE = /^([^.]+)\.(request|response)\.body\.?((\$|\/\/)?[^}]+)?/;
 export class VarMap {
     
     /**
-     * Variables are user defined `@thing = whatever`.
+     * Local variables - user defined `@thing = whatever`.
      */
     variables: StringMap;
+    
+    /**
+     * Global variables, aka. '$shared', aka. environment vars.
+     */
+    globals: StringMap;
     
     /**
      * Entities are request/response objects from `# @name` declarations.
@@ -43,22 +49,23 @@ export class VarMap {
     
     constructor(props?: Props) {
         this.variables = props?.variables ?? {};
+        this.globals = props?.globals ?? {};
         this.entities = props?.entities ?? {};
     }
     
     /**
-     * Add a bunch of local variables.
+     * Add a bunch of _global_ variables.
      * 
      * @param variables 
      */
-    public addVars(variables: StringMap) {
+    public addGlobals(variables: StringMap) {
         for (let [name, value] of Object.entries(variables)) {
             this.addVar(name, value);
         }
     }
     
     /**
-     * Add a single variable.
+     * Add a _local_ variable.
      * 
      * @param name 
      * @param value 
@@ -178,7 +185,11 @@ export class VarMap {
         if (m) {
             const [_, name, args] = m;
             
-            // @todo $shared.
+            // Special case - access environment variables.
+            // I guess this is useful to prevent locals from overriding things.
+            if (name === 'shared' && args in this.globals) {
+                return this.globals[args];
+            }
             
             if (isFunction(name)) {
                 const fn = FUNCTIONS[name];
@@ -272,8 +283,16 @@ export class VarMap {
             const body = this._findBody(content);
             if (body) return body;
             
-            // variables
-            return locals[content] || `{{${content}}}`;
+            if (content in locals) {
+                return locals[content];
+            }
+            
+            if (content in this.globals) {
+                return this.globals[content];
+            }
+            
+            // Give up.
+            return `{{${content}}}`;
         });
     }
 }

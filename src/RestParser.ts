@@ -65,7 +65,7 @@ export class RestParser {
         const requests: RestRequest[] = [];
         
         // Chuck in those environment variables.
-        vars.addVars(this.options.settings.getEnvironment(this.options.env));
+        vars.addGlobals(this.options.settings.getEnvironment(this.options.env));
         
         for (let part of contents.split(/###+.*\n/)) {
             let step: Step = "init";

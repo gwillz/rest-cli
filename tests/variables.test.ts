@@ -114,6 +114,39 @@ test("VarMap: response xml body", assert => {
     assert.end();
 });
 
+test("VarMap: global variables + $shared", assert => {
+    const vars = new VarMap({
+        globals: {
+            hello: '111',
+            world: '222',
+        },
+        variables: {
+            hello: '333',
+        },
+    });
+    
+    {
+        const actual = vars.replace("{{hello}}");
+        const expected = '333';
+        assert.equals(actual, expected);
+    }
+    
+    {
+        const actual = vars.replace("{{world}}");
+        const expected = '222';
+        assert.equals(actual, expected);
+    }
+    
+    
+    {
+        const actual = vars.replace("{{$shared hello}}");
+        const expected = '111';
+        assert.equals(actual, expected);
+    }
+    
+    assert.end();
+});
+
 test("VarMap: $guid", assert => {
     const vars = new VarMap();
     
