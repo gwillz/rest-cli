@@ -67,7 +67,20 @@ export class RestParser {
         // Chuck in those environment variables.
         vars.addGlobals(this.options.settings.getEnvironment(this.options.env));
         
-        for (let part of contents.split(/###+.*\n/)) {
+        // Line iterator.
+        // Explicitly not using a for-range here because I wrote a weird double
+        // loop thing and it works and I really can't be arsed re-writing it.
+        // This retains a 'line cursor' across the inner loops, so we can parse
+        // many requests from a single file.
+        const lines = (function*() {
+            const lines = contents.split(/[\r\n]+/);
+            for (let line of lines) yield line;
+        })();
+        
+        // Parse requests.
+        // Each loop is one request.
+        let eof = false;
+        while (!eof) {
             let step: Step = "init";
 
             const headers: StringMap = {};
@@ -76,9 +89,24 @@ export class RestParser {
             let body = "";
             let filePath = "";
             
-            for (let line of part.split(/[\n\r]+/)) {
-                let token = findToken(line);
-
+            // Parse lines of a single request.
+            while (true) {
+                const line = lines.next();
+                
+                // We're out of data.
+                // Stop parsing lines and let the request loop tidy things up.
+                if (line.done) {
+                    eof = true;
+                    break;
+                };
+                
+                let token = findToken(line.value);
+                
+                // This request is done, we're moving on.
+                if (token && token.type == "break") {
+                    break;
+                }
+                
                 // variables
                 if (token && token.type == "variable" && step == "init") {
                     vars.addVar(token.name, token.value);
@@ -108,8 +136,8 @@ export class RestParser {
                 }
                 // body
                 else if (step == "body" || step == "request") {
-                    if (body || line) {
-                        body += line + "\n";
+                    if (body || line.value) {
+                        body += line.value + "\n";
                     }
                 }
                 // error

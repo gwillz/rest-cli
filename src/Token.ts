@@ -1,6 +1,8 @@
 
 export type Method = "GET" | "PUT" | "PATCH" | "POST" | "DELETE" | "HEAD" | "OPTIONS";
 
+export type BreakToken =
+    { type: "break" };
 export type VariableToken =
     { type: "variable", name: string, value: string };
 export type SettingToken =
@@ -17,6 +19,7 @@ export type CommentToken =
     { type: "comment" };
 
 export type Token =
+    | BreakToken
     | VariableToken
     | SettingToken
     | RequestToken
@@ -34,6 +37,7 @@ interface TokenRule {
 }
 
 const TOKENS: TokenRule[] = [
+    { type: "break", regex: /^###.*$/ },
     { type: "variable", regex: /^@(\w+)\s*=\s*(.+)$/ },
     { type: "setting", regex: /^(?:#+|\/\/+)\s*@(\w+)\s*(\w+)?$/ },
     { type: "comment", regex: /^\s*(?:#|\/\/).*$/ },
@@ -49,6 +53,8 @@ export function findToken(line: string): Token | null {
         if (!m) continue;
         
         switch (type) {
+            case "break":
+                return { type };
             case "variable":
                 return { type, name: m[1], value: m[2].trim() };
             case "setting":
