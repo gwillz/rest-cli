@@ -1,7 +1,7 @@
 
 import fs from './fs';
 import path from 'path';
-import { StringMap } from './utils';
+import { getRoot, StringMap } from './utils';
 
 type Environments = Record<string, StringMap>;
 
@@ -155,7 +155,7 @@ export class Settings {
         }
         
         // Stopper.
-        if (dirname === "/") {
+        if (dirname === getRoot()) {
             throw new Error(`Cannot find ${target_file}`);
         }
         

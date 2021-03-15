@@ -202,3 +202,7 @@ export async function* expandPaths(...patterns: string[]): AsyncGenerator<string
     }
 }
 
+export function getRoot() {
+    const { root } = path.parse(process.cwd());
+    return root;
+}
