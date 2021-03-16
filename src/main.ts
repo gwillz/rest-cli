@@ -1,4 +1,4 @@
-#!/usr/bin/node
+#!/usr/bin/env node
 
 import chalk from 'chalk';
 import { Headers } from 'node-fetch';

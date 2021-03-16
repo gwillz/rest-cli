@@ -89,7 +89,7 @@ If you really need Node v8, you can hack a solution with the
 Something like:
 
 ```sh
-echo "#!/usr/bin/node --harmony_async_iterator" > restcli
+echo "#!/usr/bin/env node --harmony_async_iterator" > restcli
 echo "require('rest-cli').main()" >> restcli
 chmod +x restcli
 ./restcli
