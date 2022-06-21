@@ -45,6 +45,7 @@
     "typescript": "^4.0.3"
   },
   "dependencies": {
+    "@xmldom/xmldom": "^0.8.2",
     "chalk": "^3.0.0",
     "cli-highlight": "^2.1.4",
     "dotenv": "^8.2.0",
@@ -58,7 +59,6 @@
     "uuid": "^3.4.0",
     "xml-beautifier": "^0.4.3",
     "xml-formatter": "^1.2.0",
-    "xmldom": "^0.5.0",
     "xpath": "0.0.27"
   },
   "rest-client.environmentVariables": {
@@ -71,5 +71,8 @@
     "production": {
       "password": "REDACTED"
     }
+  },
+  "overrides": {
+    "trim": "0.0.3"
   }
 }
